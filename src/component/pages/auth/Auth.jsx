@@ -5,15 +5,15 @@ import axios from "axios";
 export const Auth = () => {
     const [nama, setNama] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [email, setEmail] = useState('');
+    const [no_hp, setno_hp] = useState('');
     const [password, setPassword] = useState('');
     const [activeTab, setActiveTab] = useState('login');
     const navigate = useNavigate();
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/auth', {
-                email: email,
+            const response = await axios.post('http://192.168.0.3:5000/auth', {
+                no_hp: no_hp,
                 password: password
             });
 
@@ -22,7 +22,7 @@ export const Auth = () => {
                 navigate('/beranda');
                 // Arahkan ke beranda jika autentikasi berhasil
             } else {
-                setErrorMessage('Email/Password Salah'); // Tampilkan pesan kesalahan
+                setErrorMessage('no_hp/Password Salah'); // Tampilkan pesan kesalahan
             }
         } catch (error) {
             setErrorMessage('Terjadi kesalahan pada server');
@@ -44,7 +44,7 @@ export const Auth = () => {
     }, []);
     const handleSignup = async () => {
         try {
-            await axios.post('http://192.168.0.3:3000/register', { nama, email, password });
+            await axios.post('http://192.168.0.3:3000/register', { nama, no_hp, password });
             // ... Logika setelah signup berhasil
         } catch (error) {
             alert(error.response.data.message);
@@ -71,18 +71,16 @@ export const Auth = () => {
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form className="space-y-6" action="#" method="POST">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                            Alamat Email
+                        <label className="block text-sm font-medium leading-6 text-gray-900">
+                            Nomor Hape
                         </label>
                         <div className="mt-2">
                             <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
+                                id="no_hp"
+                                type="number"
                                 required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={no_hp}
+                                onChange={(e) => setno_hp(e.target.value)}
                                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                             />
                         </div>
@@ -95,7 +93,7 @@ export const Auth = () => {
                             </label>
                             <div className="text-sm">
                                 <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                    Lupa Password? Mampuss
+                                    Lupa Password?
                                 </a>
                             </div>
                         </div>
@@ -130,8 +128,9 @@ export const Auth = () => {
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Belum punya Akun Madinku?{' '}
-                    <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                        Daftar dulu dong!!
+                        <a href={`https://wa.me/6285788778671`} target="_blank" rel="noopener noreferrer" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+
+                        Segera hubungi Pengurus Madin
                     </a>
                 </p>
             </div>

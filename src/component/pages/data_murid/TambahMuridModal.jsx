@@ -12,22 +12,28 @@ const TambahMuridModal = ({ kelasTerpilih,kelasdata, onClose, onSave }) => {
     }, []);
     const idMuridTerakhir = async ()=>{
         try {
-            const res = await axios.get('http://localhost:5000/murid/terakhirsopo')
+            const res = await axios.get('http://192.168.0.3:5000/murid/terakhirsopo')
         setMuridTerakhir(res.data)
         }catch (e) {
 
         }
     }
-    console.log(idKelasMurid)
+
 
     const handleSubmit = async () => {
         try {
-            await axios.post('http://localhost:5000/murid/tambah/', {
+            await axios.post('http://192.168.0.3:5000/murid/tambah/', {
                 id_murid:muridTerakhir+1,
                 nama_murid: namaMurid,
                 id_kelas: idKelasMurid,
                 isBoyong:false
             });
+
+
+
+
+
+
             onSave();
         } catch (error) {
             console.error('Terjadi kesalahan saat mengirim data:', error);

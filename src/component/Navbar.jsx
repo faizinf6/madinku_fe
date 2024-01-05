@@ -1,9 +1,10 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon,UserCircleIcon } from '@heroicons/react/24/outline'
-import logo from '../logo.svg'
+import logo from '../logo_ppds.png'
 import axios from "axios";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate,Link } from "react-router-dom";
+import './pages/gaya.css'
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -13,19 +14,14 @@ export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const navigation = [
-        { name: 'Beranda', route: '/beranda', current: location.pathname === '/beranda' },
-        { name: 'Data', route: '/data-murid', current: location.pathname === '/data-murid' },
-        { name: 'Rekap Nilai', route: '/rekap-nilai', current: location.pathname === '/rekap-nilai' },
-        { name: 'Akun', route: '/auth', current: location.pathname === '/auth' },
-    ];
     const handleLogout = async () => {
-        await axios.post('http://localhost:5000/logout')
+        await axios.post('http://192.168.0.3:5000/logout')
         localStorage.removeItem('user');
-
-        // navigate('/auth');
+        localStorage.clear();
+        navigate('/auth');
         // Lakukan tindakan selanjutnya, misal mengarahkan ke halaman login
     };
+
 
     const handleNavigation = (route) => {
         navigate(route);
@@ -50,39 +46,26 @@ export default function Navbar() {
                                 </Disclosure.Button>
                             </div>
                             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                                <div className="flex flex-shrink-0 items-center">
+                                <div className="flex flex-shrink-0 items-center" onClick={()=>navigate("/beranda")}>
                                     <img
-                                        className="h-8 w-auto"
+                                        className="h-10 w-auto"
                                         src= {logo}
-                                        alt="Your Company"
+                                        alt="Darussaadah"
                                     />
                                 </div>
                                 <div className="hidden sm:ml-6 sm:block">
                                     <div className="flex space-x-4">
-                                        {navigation.map((item) => (
-                                            <button
-                                                key={item.name}
-                                                onClick={() => handleNavigation(item.route)}
-                                                className={classNames(
-                                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                    'rounded-md px-3 py-2 text-sm font-medium'
-                                                )}
-                                            >
-                                                {item.name}
-                                            </button>
-                                        ))}
+                                        <NavigationLink route="/beranda" name="Beranda" currentPath={location.pathname} />
+                                        <NavigationLink route="/data-murid" name="Data" currentPath={location.pathname} />
+                                        <NavigationLink route="/rekap-nilai" name="Rekap Nilai" currentPath={location.pathname} />
+                                        <NavigationLink route="/taftisan" name="Panel Ujian" currentPath={location.pathname} />
+                                        <NavigationLink route="/profil-pengguna" name="Akun" currentPath={location.pathname} />
                                     </div>
+
                                 </div>
                             </div>
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                <button
-                                    type="button"
-                                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                >
-                                    <span className="absolute -inset-1.5" />
-                                    <span className="sr-only">View notifications</span>
-                                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                                </button>
+
 
                                 {/* Profile dropdown */}
                                 <Menu as="div" className="relative ml-3">
@@ -105,14 +88,14 @@ export default function Navbar() {
                                         leaveFrom="transform opacity-100 scale-100"
                                         leaveTo="transform opacity-0 scale-95"
                                     >
-                                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <Menu.Items className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                             <Menu.Item>
                                                 {({ active }) => (
                                                     <a
-                                                        href="#"
+                                                        onClick={()=>navigate('/profil-pengguna')}
                                                         className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                                                     >
-                                                        {JSON.parse(localStorage.getItem('user')).nama || 'Pengguna'}
+                                                        {JSON.parse(localStorage.getItem('user')).nama_admin || 'Pengguna'}
                                                     </a>
                                                 )}
                                             </Menu.Item>
@@ -121,8 +104,7 @@ export default function Navbar() {
                                                 {({ active }) => (
                                                     <a
                                                         onClick={handleLogout}
-                                                        href="http://192.168.0.3:3000/auth"
-                                                        className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                                                        className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700 z-40')}
                                                     >
                                                         Keluar
                                                     </a>
@@ -137,20 +119,11 @@ export default function Navbar() {
 
                     <Disclosure.Panel className="sm:hidden ">
                         <div className="space-y-1 px-2 pb-3 pt-2">
-                            {navigation.map((item) => (
-                                <Disclosure.Button
-                                    key={item.name}
-                                    as="a"
-                                    href={item.href}
-                                    className={classNames(
-                                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                        'block rounded-md px-3 py-2 text-base font-medium'
-                                    )}
-                                    aria-current={item.current ? 'page' : undefined}
-                                >
-                                    {item.name}
-                                </Disclosure.Button>
-                            ))}
+                            <NavigationLink route="/beranda" name="Beranda" currentPath={location.pathname} />
+                            <NavigationLink route="/data-murid" name="Data" currentPath={location.pathname} />
+                            <NavigationLink route="/rekap-nilai" name="Rekap Nilai" currentPath={location.pathname} />
+                            <NavigationLink route="/taftisan" name="Panel Ujian" currentPath={location.pathname} />
+                            <NavigationLink route="/profil-pengguna" name="Akun" currentPath={location.pathname} />
                         </div>
                     </Disclosure.Panel>
                 </>
@@ -158,3 +131,30 @@ export default function Navbar() {
         </Disclosure>
     )
 }
+
+
+function NavigationLink({ route, name, currentPath }) {
+    return (
+        <Link
+            to={route}
+            className={classNames(
+                currentPath === route ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                'rounded-md px-3 py-2 text-sm font-medium'
+            )}
+        >
+            {name}
+        </Link>
+    );
+}
+{/*{navigation.map((item) => (*/}
+{/*    <button*/}
+{/*        key={item.name}*/}
+{/*        onClick={() => handleNavigation(item.route)}*/}
+{/*        className={classNames(*/}
+{/*            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',*/}
+{/*            'rounded-md px-3 py-2 text-sm font-medium'*/}
+{/*        )}*/}
+{/*    >*/}
+{/*        {item.name}*/}
+{/*    </button>*/}
+{/*))}*/}

@@ -10,7 +10,7 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
     console.log(jsonData)
     // Mengelompokkan data kehadiran berdasarkan 'id_murid'
     const kehadiranById = dataKehadiran.reduce((acc, item) => {
-        acc[item.id_murid] = item.kehadiran.alpha; // asumsikan 'alpha' adalah nilai pelanggaran
+        acc[item.id_murid] = item.kehadiran.alpha/4; // asumsikan 'alpha' adalah nilai pelanggaran
         return acc;
     }, {});
 
@@ -37,22 +37,22 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
 
     const tableRows = Object.values(groupedData).map((murid, index) => (
         <tr key={murid.nama_murid} className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'}`}>
-            <td className={`sticky left-0 z-10  px-4 py-2 ${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} ` }>{murid.nama_murid}</td>
+            <td className={`sticky left-0 font-bold  px-4 py-2 ${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} ` }>{murid.nama_murid}</td>
             {fanHeaders.map(fan => {
                 const nilai = murid.nilai[fan] || '-';
                 const isHighlighted = nilai !== '-' && nilai <= 5.5;
                 return (
                     <td key={`${murid.nama_murid}-${fan}`}
-                        className={`border px-4 py-2 ${isHighlighted ? ' font-bold text-red-600' : ''}`}>
-                        {nilai}
+                        className={`border px-4 py-2 ${isHighlighted ? 'font-bold text-red-600' : ''}`}>
+                        {(nilai).toFixed(1)}
                     </td>
                 );
             })}
-            <td className="border px-4 py-2">{murid.total}</td>
-            <td className="border px-4 py-2">{murid.pelanggaran}</td>
-            <td className="border px-4 py-2">{murid.grandTotal}</td>
+            <td className="border px-4 py-2">{(murid.total).toFixed(1)}</td>
+            <td className="border px-4 py-2">{(murid.pelanggaran)}</td>
+            <td className="border px-4 py-2">{(murid.grandTotal).toFixed(1)}</td>
             <td className={`border px-4 py-2 ${parseFloat(murid.average) <= 5.5 ? 'bg-red-600 text-white' : ''}`}>
-                {murid.average}
+                {(murid.average)}
             </td>
 
             <td className="border px-4 py-2">{murid.nama_murid}</td>
@@ -60,20 +60,21 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
     ));
 
     return (
-        <table className=" min-w-full table-auto border-collapse border border-gray-300 ">
+        <table className="min-w-full table-auto border-collapse border border-gray-300">
             <thead>
-            <tr className="bg-gray-400">
-                <th className="sticky left-0 z-10 border px-4 py-2 bg-gray-400">Nama/Fan</th>
-                {fanHeaders.map(fan => <th key={fan} className="border px-4 py-2">{fan}</th>)}
-                <th className="border px-4 py-2">Total</th>
-                <th className="border px-4 py-2">Pelanggaran</th>
-                <th className="border px-4 py-2">Grand Total</th>
-                <th className="border px-4 py-2">Rata-rata</th>
-                <th className="border px-4 py-2">Nama</th>
+            <tr className="bg-yellow-300 sticky top-0 z-10"> {/* Add sticky top-0 z-10 here */}
+                <th className="border px-4 py-2 sticky left-0 bg-yellow-300 z-20">Nama/Fan</th>
+                {fanHeaders.map(fan => <th key={fan} className="border px-4 py-2 sticky bg-yellow-300">{fan}</th>)} {/* Add sticky bg-yellow-300 */}
+                <th className="border px-4 py-2 sticky bg-yellow-300">Total</th>
+                <th className="border px-4 py-2 sticky bg-yellow-300">Pelanggaran</th>
+                <th className="border px-4 py-2 sticky bg-yellow-300">Grand Total</th>
+                <th className="border px-4 py-2 sticky bg-yellow-300">Rata-rata</th>
+                <th className="border px-4 py-2 sticky bg-yellow-300">Nama</th>
             </tr>
             </thead>
             <tbody>{tableRows}</tbody>
         </table>
+
     );
 };
 

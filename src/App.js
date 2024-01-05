@@ -4,10 +4,16 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DataMurid from "./component/pages/data_murid/DataMurid.jsx";
 import Beranda from "./component/pages/Beranda.jsx";
-import { Auth } from "./component/pages/Auth.jsx";
-import AuthRedirect from '../src/component/pages/AuthRedirect.jsx';
-import RekapNilai from "./component/pages/RekapNilai.jsx";
-import {Informasi} from "./component/pages/Informasi.jsx"; // Import komponen baru
+import { Auth } from "./component/pages/auth/Auth.jsx";
+import AuthRedirect from './component/pages/auth/AuthRedirect.jsx';
+import RekapNilai from "./component/pages/rekap_nilai/RekapNilai.jsx";
+import {Informasi} from "./component/pages/Informasi.jsx";
+import Taftisan from "./component/pages/taftisan/Taftisan.jsx";
+import {ProfilUser} from "./component/pages/ProfilUser.jsx";
+import {ListMustahiq} from "./component/pages/informasi/list_mustahiq/ListMustahiq.jsx";
+import {MuridBoyongPage} from "./component/pages/data_murid/MuridBoyongPage.jsx";
+import {ScannerMasukUjian} from "./component/pages/taftisan/ScannerMasukUjian.jsx";
+import {UjianQrPage} from "./component/pages/taftisan/UjianQrPage.jsx"; // Import komponen baru
 
 function App() {
     return (
@@ -20,6 +26,12 @@ function App() {
                     <Route path="/data-murid" element={<DataMurid />} />
                     <Route path="/rekap-nilai" element={<RekapNilai />} />
                     <Route path="/informasi" element={<Informasi />} />
+                    <Route path="/taftisan" element={< Taftisan/>} />
+                    <Route path="/profil-pengguna" element={< ProfilUser/>} />
+                    <Route path="/list-mustahiq" element={< ListMustahiq/>} />
+                    <Route path="/murid-boyong" element={< MuridBoyongPage/>} />
+                    <Route path="/masuk-ujian" element={< ScannerMasukUjian/>} />
+                    <Route path="/buat-qr" element={< UjianQrPage/>} />
                 </Routes>
             </BrowserRouter>
         </div>

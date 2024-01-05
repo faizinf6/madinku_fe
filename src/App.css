@@ -36,3 +36,21 @@
     transform: rotate(360deg);
   }
 }
+
+:root {
+  --toastify-color-progress-light: teal; /* For light theme */
+  --toastify-color-progress-dark: teal;  /* For dark theme */
+}
+
+/* CSS to hide number input spinners */
+.no-spinners::-webkit-inner-spin-button,
+.no-spinners::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinners {
+  -moz-appearance: textfield; /* For Firefox */
+}
+
+

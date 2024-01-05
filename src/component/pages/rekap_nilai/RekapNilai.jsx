@@ -1,15 +1,17 @@
-import Navbar from "../Navbar.jsx";
+import Navbar from "../../Navbar.jsx";
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import ButtonGroup from "./data_murid/ButtonGroup.jsx";
+import ButtonGroup from "../data_murid/ButtonGroup.jsx";
 import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import TabelRapot from "./rekap_nilai/TabelRapot.jsx";
+import TabelRapot from "./TabelRapot.jsx";
+import '../gaya.css'
+
 
 //RekapNilai
 const RekapNilai = () => {
 
-    // unutuk data mapel
+    // untuk data mapel
     const [mapelData, setMapelData] = useState([]);
     const [selectedMapel, setSelectedMapel] = useState({});
     const [dataMuridDanNilainya, setDataMuridDanNilainya] = useState([]);
@@ -43,6 +45,7 @@ const RekapNilai = () => {
     const [kehadiran, setKehadiran] = useState({});
     const [kehadiranAsli, setKehadiranAsli] = useState({});
 
+    const allowedPattern = /^\d{0,2}(\.|,)?\d{0,1}$/;
 
     const fetchDataKehadiran = async () => {
         try {
@@ -62,11 +65,9 @@ const RekapNilai = () => {
             setKehadiran(fetchedKehadiran);
             setKehadiranAsli(fetchedKehadiran);
 
-            // console.log(responseKehadiranDataMurid);
-            // console.log(kelasValue);
 
         } catch (error) {
-            console.log("There was an error: " + error.message);
+            // toast.error(`Error ${error.message} hubungi pengurus`, {autoClose: 1100,});
         }
     }
 
@@ -82,7 +83,6 @@ const RekapNilai = () => {
     };
 
     const handleSaveDataKehadiran = async (murid) => {
-        // console.log(murid.nama_murid, kehadiran[murid.id_murid] || murid.kehadiran);
 
 
         const updatedKehadiran = kehadiran[murid.id_murid] || murid.kehadiran;
@@ -95,19 +95,21 @@ const RekapNilai = () => {
                 sakit: updatedKehadiran.sakit
             });
 
-            console.log('Response:',  response.data);
-            //setIsiToast(`${murid.nama_murid} Alpha: ${response.data.alpha}  Sakit: ${response.data.sakit} Izin: ${response.data.izin}`)
+
+
+            toast.success(`Nilai Berhasil Disimpan!, untuk ${murid.nama_murid}`, {autoClose: 1100,});
 
 
         } catch (error) {
             console.error('Error:', error.response ? error.response.data : error.message);
+            toast.error(`Gagal menyimpan, coba ulangi/refresh halaman`, {autoClose: 1100,});
         }
 
         setKehadiranAsli(prev => ({
             ...prev,
             [murid.id_murid]: { ...updatedKehadiran }
         }));
-        //setShowToast(true)
+
 
     };
 
@@ -133,11 +135,13 @@ const RekapNilai = () => {
             setKelasData(response.data);
         } catch (error) {
             console.error('Terjadi kesalahan saat memuat data:', error);
+            // toast.error(`Terjadi kesalahan saat memuat data: ${error.message}`, {autoClose: 3100,});
+
         }
     };
 
     const handleLoadMapel = async () => {
-        // console.log()
+
         if (idSelectedKelas) {
 
 
@@ -152,14 +156,15 @@ const RekapNilai = () => {
 
                 // Check if the response data is empty
                 if (response.data && response.data.length === 0) {
-                    console.log("Received empty data array");
+                    toast.error(`Tidak ada data / kosong`, {autoClose: 3100,});
                     setMapelData([]);
 
                     // Clear mapelData if data is empty
                     // Handle the empty data scenario appropriately here
                 } else {
-                    console.log(response.data)
                     setMapelData(response.data); // Set data as usual if not empty
+                    toast.success(`Berhasil mendapatkan data dari server`, {autoClose: 1100,});
+
                 }
 
 
@@ -175,10 +180,7 @@ const RekapNilai = () => {
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-
-        if (user) {
-            setAdminData(user);
-        }
+        if (user) {setAdminData(user);}
         fetchDataKelas();
     }, []);
 
@@ -195,7 +197,6 @@ const RekapNilai = () => {
 
             } catch (error) {
                 setDataMuridDanNilainya([]);
-
                 console.log("There was an error: " + error.message);
             }
         }
@@ -230,12 +231,13 @@ const RekapNilai = () => {
                 });
 
                 setDataNilaiHafalan(mergedData);
-                // console.log(dataMuridDanNilainya)
+
 
             } catch (error) {
                 setDataNilaiHafalan([]);
 
-                console.log("There was an error: " + error.message);
+                toast.error(`Error ${error.message}`, {autoClose: 3100,});
+
             }
         }
     };
@@ -245,11 +247,6 @@ const RekapNilai = () => {
 
         fetchDataNilaiMuridPerMapel();
 
-
-
-
-
-        // console.log(dataMuridDanNilainya)
     }, [selectedMapel]);
 
 
@@ -266,7 +263,7 @@ const RekapNilai = () => {
                 `http://192.168.0.3:5000/nilai/update?id=${student.id_murid}&id_kelas=${idSelectedKelas}&id_mapel=${student.id_mapel}&isi_nilai=${updatedScore}`
             );
             // Handle the response as needed
-            // console.log(responseDataMurid.data);
+
             fetchDataNilaiMuridPerMapel();
             const newEditedScores = {...editedScores};
             delete newEditedScores[student.id_murid];
@@ -274,17 +271,13 @@ const RekapNilai = () => {
 
 
             // Show success toast with both values
-            toast(`Nilai berubah dari ${originalScore} -> ${updatedScore}, berhasil disimpan! ${student.nama_murid}, ${selectedMapel.nama_mapel}`, {
-                position: "top-center",
-                autoClose: 1100,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+
+            toast.success(`Nilai berubah dari ${originalScore} -> ${updatedScore}, berhasil disimpan! ${student.nama_murid}, ${selectedMapel.nama_mapel}`, {autoClose: 1100,});
+
         } catch (error) {
-            console.error('Error updating data:', error);
+
+            toast.error(`Error updating data ${error}`, {autoClose: 3100,});
+
         }
     };
 
@@ -305,7 +298,7 @@ const RekapNilai = () => {
         if (data_mapel.nama_mapel === "Muhafadzoh") {
              await fetchDataNilaiHafalan(data_mapel);
             setShowMuhafadzohModal(true)
-            console.log("Muhafadzoh dikliiiik")
+
 
         } else {
 
@@ -316,6 +309,7 @@ const RekapNilai = () => {
 
 
     const handleBuatRekapRapotClick = async () => {
+        await fetchDataKehadiran()
         try {
 
 
@@ -323,16 +317,20 @@ const RekapNilai = () => {
                 `http://192.168.0.3:5000/murid/rapot/${idSelectedKelas}`
             );
             // Set the response text to state
-            // setResponseText(JSON.stringify(response.data, null, 2));
             setdataRapotJson(response.data);
-            console.log(response.data)
+            setshowTabelRapotModal(true)
+
+
 
         } catch (error) {
             // Set error message to state
-            console.log("There was an error: " + error.message);
+
+            toast.error(`Gagal mengambil data, silahkan ulangi/Refresh beberapa saat lagi`, {autoClose: 1100,});
+            toast.error(``, {autoClose: 3100,});
+
+
         }
 
-        setshowTabelRapotModal(true)
 
 
     };
@@ -369,26 +367,39 @@ const RekapNilai = () => {
             [id_murid]: true
         }));
     };
-    const handleTotalHafalan = async (murid) => {
-        //{((scores[murid.id_murid]?.pencapaian + scores[murid.id_murid]?.kelancaran + scores[murid.id_murid]?.artikulasi) / 3.0).toFixed(1)}
-        // console.log(scores[murid.id_murid].artikulasi)
+    const handleUpdateNilaiHafalan = async (murid) => {
+
+        const nilaihafalanMurid =scores[murid.id_murid]
+
+
         try {
 
             const response = await axios.patch(`http://192.168.0.3:5000/nilai/hafalan/update`, {
                 id_murid: murid.id_murid,
-                pencapaian: scores[murid.id_murid].pencapaian,
-                kelancaran:  scores[murid.id_murid].kelancaran,
-                artikulasi:  scores[murid.id_murid].artikulasi
+                pencapaian: nilaihafalanMurid.pencapaian,
+                kelancaran: nilaihafalanMurid.kelancaran,
+                artikulasi: nilaihafalanMurid.artikulasi
             });
+
+            const rata2 =(nilaihafalanMurid.pencapaian+nilaihafalanMurid.kelancaran+nilaihafalanMurid.artikulasi)/3.0
+            const responseUpdateNilaiHafalanUtama = await axios.patch(
+                `http://192.168.0.3:5000/nilai/update?id=${murid.id_murid}&id_kelas=${idSelectedKelas}&id_mapel=${murid.id_mapel}&isi_nilai=${rata2}`
+            );
+
+
 
             await fetchDataNilaiHafalan()
 
-            console.log('Response:', response.data);
-            //setIsiToast(`${murid.nama_murid} Alpha: ${response.data.alpha}  Sakit: ${response.data.sakit} Izin: ${response.data.izin}`)
+
+            toast.success(`Nilai Berhasil Disimpan!, untuk ${murid.nama_murid}`, {autoClose: 1100,});
+
+
 
 
         } catch (error) {
             console.error('Error:', error.response ? error.response.data : error.message);
+            toast.error(`Gagal Menyimpan`, {autoClose: 1100,});
+
         }
 
 
@@ -418,7 +429,7 @@ const RekapNilai = () => {
     };
 
     const handleCloseTambahModal = () => {
-        // console.log(idSelectedKelas)
+
         setShowTambahModal(false);
     };
 
@@ -433,8 +444,9 @@ const RekapNilai = () => {
 
     return (
         <div><Navbar/>
+            <ToastContainer/>
+
             <div className="overflow-x-auto grid w-screen place-items-center">
-                <ToastContainer/>
 
 
                 <div className="mt-4">
@@ -539,41 +551,41 @@ const RekapNilai = () => {
                                         </div>
                                     </div>
 
-                                    <table className="min-w-full leading-normal">
-                                        <thead>
-                                        <tr>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    <table className="min-w-full leading-normal ">
+                                        <thead >
+                                        <tr className="bg-yellow-300 sticky top-0 z-10">
+                                            <th className="px-5 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Nama Murid
                                             </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            <th className="px-5 py-3 border-b-2 border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Nilai
                                             </th>
-                                            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                            <th className="px-5 py-3 border-b-2 border-gray-200 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                                 Simpan
                                             </th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {dataMuridDanNilainya.map((student, index) => (
-                                            <tr key={student.id_murid}
-                                                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-500'}`}>
+                                            <tr key={student.id_murid} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-200'}`}>
 
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                <td className="px-5 py-5 border-b border-gray-200  font-bold">
                                                     {student.nama_murid}
                                                 </td>
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                                <td className="px-5 py-5 border-b border-gray-200  text-sm">
                                                     <input
                                                         type="number"
                                                         defaultValue={student.isi_nilai}
                                                         maxLength="3"
-                                                        style={{maxWidth: '200px'}}
-                                                        className="form-input mt-1 block w-full sm:w-16"
+                                                        // style={{maxWidth: '200px'}}
+                                                        className="form-input rounded-md border-gray-300  w-14 no-spinners"
                                                         onChange={(e) => {
                                                             const value = e.target.value;
 
-                                                            // Allow only up to 3 digits, optionally signed
-                                                            if (value.length > 3) {
-                                                                e.target.value = value.substring(0, 3);
+                                                            // Validate using the refined regex
+                                                            if (!allowedPattern.test(value)) {
+                                                                e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                return; // Prevent further processing
                                                             }
 
                                                             handleScoreChange(student.id_murid, value);
@@ -582,7 +594,9 @@ const RekapNilai = () => {
 
 
                                                 </td>
-                                                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+
+
+                                                <td className="px-5 py-5 border-b border-gray-200  text-sm">
                                                     <button
                                                         onClick={() => handleSave(student)}
                                                         disabled={editedScores[student.id_murid] === undefined || editedScores[student.id_murid] === student.isi_nilai}
@@ -613,8 +627,6 @@ const RekapNilai = () => {
                 )}
 
                 {showMuhafadzohModal && (
-
-
                     <div className="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
                         <div className="modal-overlay absolute w-full h-full bg-gray-500 opacity-50"></div>
 
@@ -639,28 +651,37 @@ const RekapNilai = () => {
                                     </div>
 
                                     <div className=" px-1 pt-1 pb-4 sm:p-1 sm:pb-1">
-                                        <table className=" divide-y divide-gray-500">
-                                            <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-                                                <th className="px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase">Pencapaian</th>
-                                                <th className="px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase">Kelancaran</th>
-                                                <th className="px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase">Artikulasi</th>
-                                                <th className="px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase">Total&#247;3</th>
-                                                <th className="px-1 py-1 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                                        <table className=" divide-y divide-gray-500 ">
+                                            <thead >
+                                            <tr className="bg-yellow-300 sticky top-0 z-10">
+                                                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                                                <th className="px-1 py-3 text-center text-xs font-medium text-gray-500 uppercase">Pencapaian</th>
+                                                <th className="px-1 py-3 text-center text-xs font-medium text-gray-500 uppercase">Kelancaran</th>
+                                                <th className="px-1 py-3 text-center text-xs font-medium text-gray-500 uppercase">Artikulasi</th>
+                                                <th className="px-1 py-3 text-center text-xs font-medium text-gray-500 uppercase">Total&#247;3</th>
+                                                <th className="px-1 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                             </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-500 ">
                                             {dataNilaiHafalan.map((murid, index) => (
-                                                <tr key={murid.id_murid}>
-                                                    <td className="font-bold border px-2 py-2">{murid.nama_murid}</td>
+                                                <tr key={murid.id_murid} className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'}`}>
+                                                    <td className={`sticky left-0 font-bold border px-2 py-2 ${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} ` }>{murid.nama_murid}</td>
                                                     <td className="border px-1 py-2 text-center">
                                                         <input
                                                             type="number"
                                                             maxLength="3"
                                                             defaultValue={murid.pencapaian}
-                                                            onChange={(e) => handleScoreHafalanChange(murid.id_murid, 'pencapaian', e.target.value)}
-                                                            className="form-input rounded-md border-gray-300  w-14"
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                // Validate using the refined regex
+                                                                if (!allowedPattern.test(value)) {
+                                                                    e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                    return; // Prevent further processing
+                                                                }
+
+                                                                handleScoreHafalanChange(murid.id_murid, 'pencapaian', value)
+                                                            }}
+                                                            className="form-input rounded-md border-gray-300  w-14 no-spinners"
                                                         />
                                                     </td>
                                                     <td className="border px-1 py-2 text-center">
@@ -668,8 +689,18 @@ const RekapNilai = () => {
                                                             type="number"
                                                             maxLength="3"
                                                             defaultValue={murid.kelancaran}
-                                                            onChange={(e) => handleScoreHafalanChange(murid.id_murid, 'kelancaran', e.target.value)}
-                                                            className="form-input rounded-md border-gray-300  w-14"
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                // Validate using the refined regex
+                                                                if (!allowedPattern.test(value)) {
+                                                                    e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                    return; // Prevent further processing
+                                                                }
+
+                                                                handleScoreHafalanChange(murid.id_murid, 'kelancaran', value)
+                                                            }}
+
+                                                            className="form-input rounded-md border-gray-300  w-14 no-spinners"
                                                         />
                                                     </td>
                                                     <td className="border px-1 py-2 text-center">
@@ -677,8 +708,18 @@ const RekapNilai = () => {
                                                             type="number"
                                                             maxLength="3"
                                                             defaultValue={murid.artikulasi}
-                                                            onChange={(e) => handleScoreHafalanChange(murid.id_murid, 'artikulasi', e.target.value)}
-                                                            className="form-input rounded-md border-gray-300  w-14"
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                // Validate using the refined regex
+                                                                if (!allowedPattern.test(value)) {
+                                                                    e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                    return; // Prevent further processing
+                                                                }
+
+                                                                handleScoreHafalanChange(murid.id_murid, 'artikulasi', value)
+                                                            }}
+
+                                                            className="form-input rounded-md border-gray-300  w-14 no-spinners"
                                                         />
                                                     </td>
                                                     <td className="font-bold border px-2 py-2 text-center">
@@ -688,10 +729,10 @@ const RekapNilai = () => {
                                                     <td className="border p-2 pr-3 text-center">
                                                         <button
                                                             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-                                                            onClick={() => handleTotalHafalan(murid)}
+                                                            onClick={() => handleUpdateNilaiHafalan(murid)}
                                                             disabled={!hasChanged[murid.id_murid]}
                                                         >
-                                                            Show
+                                                            Simpan
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -726,48 +767,44 @@ const RekapNilai = () => {
                 )}
 
 
+
+
                 {showTabelRapotModal && (
                     <div className="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
-                        <div className="modal-overlay absolute w-full h-full bg-gray-500 opacity-50"></div>
+                        <div className="modal-overlay absolute w-full h-full bg-gray-500 opacity-95">
+                            <button onClick={() => {setshowTabelRapotModal(false)}}
+                                    className="m-4 modal-close text-white bg-red-600 text-l font-semibold px-5 py-1 border-2 border-red-600 rounded hover:bg-red-900 hover:text-white">
+                                X
+                            </button>
 
+                        </div>
                         <div className="modal-container bg-white w-fit mx-1 rounded shadow-lg z-50 overflow-y-auto p-2" style={{maxHeight: '90vh'}}>
                             <div className="modal-content text-left ">
-
                                 {/* Modal header, close button, and table */}
-
-                                <div className="modal-content py-1 text-left px-1">
+                                <div className="modal-content py-1 text-left px-1 pb-6">
                                     <div className="flex justify-between items-center pb-3">
                                         <p className="text-2xl font-bold">Nilai Rapot</p>
-                                        <button onClick={() => {
 
-                                            setshowTabelRapotModal(false)
-                                        }}
-                                                className="modal-close text-l font-semibold px-5 py-1 border-2 border-red-600 rounded hover:bg-red-600 hover:text-white ">
-
-                                            X
-                                        </button>
                                     </div>
-
 
                                     <TabelRapot jsonData={dataRapotJson} dataKehadiran={dataMuridDanKehadiran}></TabelRapot>
 
-                                </div>
-                                <div className="modal-footer flex justify-end p-3">
-                                    <button
-                                        onClick={() => {
-                                        setshowTabelRapotModal(false)
-                                    }}
-                                        className="modal-close text-lg font-semibold px-5 py-1 border-2 border-red-600 rounded hover:bg-red-600 hover:text-white "
-                                    >
-                                        Tutup
-                                    </button>
-                                </div>
+                                    {/* Tombol Tutup di bawah Tabel */}
 
+                                        <button
+                                            onClick={() => {setshowTabelRapotModal(false)}}
+                                            className="mt-4 bg-red-600 text-white text-lg font-semibold px-5 py-1 border-2 border-red-600 rounded hover:bg-gray-700"
+                                        >
+                                            Tutup
+                                        </button>
 
+                                </div>
                             </div>
                         </div>
                     </div>
                 )}
+
+
 
                 {showKehadiranModal && (
                     <div className="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
@@ -782,7 +819,7 @@ const RekapNilai = () => {
 
                                 <div className="modal-content py-4 text-left">
                                     <div className="flex justify-between items-center pb-3">
-                                        <p className="text-2xl font-bold">Nilai Rapot</p>
+                                        <p className="text-2xl font-bold">Rekap Kehadiran</p>
                                         <button onClick={() => {
 
                                             setshowKehadiranModal(false)
@@ -795,79 +832,90 @@ const RekapNilai = () => {
 
                                     <div className=" px-1 pt-1 pb-4 sm:p-1 sm:pb-1">
                                         <table className=" divide-y divide-gray-500">
-                                            <thead className="bg-gray-50">
-                                            <tr>
+                                            <thead >
+                                            <tr className="bg-yellow-300 sticky top-0 z-10">
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                                     Nama
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase ">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase ">
                                                     Alpha
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
                                                     Sakit
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
                                                     Izin
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase ">
+                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase ">
                                                     Aksi
                                                 </th>
                                             </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-500 ">
-                                            {dataMuridDanKehadiran.map((murid) => (
-                                                <tr key={murid.id_murid}>
-                                                    <td className="border px-2 py-2">{murid.nama_murid}</td>
+                                            {dataMuridDanKehadiran.map((murid, index) => (
+                                                <tr key={murid.id_murid}  className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'}`}>
+                                                    <td className={`sticky left-0 font-bold border px-2 py-2 ${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} ` }>{murid.nama_murid}</td>
                                                     <td className="border px-1 py-2 text-center" >
                                                         <input
-                                                            type="text"
+                                                            type="number"
                                                             inputMode="numeric"
                                                             defaultValue={murid.kehadiran.alpha}
-                                                            onChange={(e) =>
-                                                                handleEditKehadiran(
-                                                                    murid.id_murid,
-                                                                    "alpha",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            className="form-input rounded-md border-gray-300  w-14"
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                // Validate using the refined regex
+                                                                if (!allowedPattern.test(value)) {
+                                                                    e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                    return; // Prevent further processing
+                                                                }
+
+                                                                handleEditKehadiran(murid.id_murid, 'alpha', value)
+                                                            }}
+
+                                                            className="form-input rounded-md border-gray-300  w-14 no-spinners"
                                                         />
                                                     </td>
                                                     <td className="border px-1 py-2 text-center">
                                                         <input
-                                                            type="text"
+                                                            type="number"
                                                             inputMode="numeric"
                                                             defaultValue={murid.kehadiran.sakit}
-                                                            onChange={(e) =>
-                                                                handleEditKehadiran(
-                                                                    murid.id_murid,
-                                                                    "sakit",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            className="form-input rounded-md border-gray-300  w-14 "
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                // Validate using the refined regex
+                                                                if (!allowedPattern.test(value)) {
+                                                                    e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                    return; // Prevent further processing
+                                                                }
+
+                                                                handleEditKehadiran(murid.id_murid, 'sakit', value)
+                                                            }}
+
+                                                            className="form-input rounded-md border-gray-300  w-14 no-spinners"
                                                         />
                                                     </td>
                                                     <td className="border px-1 py-2 text-center">
                                                         <input
-                                                            type="text"
+                                                            type="number"
                                                             inputMode="numeric"
                                                             defaultValue={murid.kehadiran.izin}
-                                                            onChange={(e) =>
-                                                                handleEditKehadiran(
-                                                                    murid.id_murid,
-                                                                    "izin",
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            className="form-input rounded-md border-gray-300 w-14"
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                // Validate using the refined regex
+                                                                if (!allowedPattern.test(value)) {
+                                                                    e.target.value = value.substring(0, 3); // Truncate to 3 digits
+                                                                    return; // Prevent further processing
+                                                                }
+
+                                                                handleEditKehadiran(murid.id_murid, 'izin', value)
+                                                            }}
+                                                            className="form-input rounded-md border-gray-300 w-14 no-spinners"
                                                         />
                                                     </td>
                                                     <td className="border px-4 py-2 text-center">
                                                         <button
                                                             onClick={() => handleSaveDataKehadiran(murid)}
                                                             disabled={!isChanged(murid.id_murid)}
-                                                            className={`px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-200 ${!isChanged(murid.id_murid) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                            className={`px-4 py-2 bg-green-500 text-black rounded hover:bg-yellow-200 ${!isChanged(murid.id_murid) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                         >
                                                             Simpan
                                                         </button>

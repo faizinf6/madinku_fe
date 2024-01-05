@@ -6,15 +6,18 @@ import ButtonGroup from "./ButtonGroup.jsx";
 import EditModalPermurid from "./EditModalPermurid.jsx";
 import TambahMuridModal from "./TambahMuridModal.jsx";
 import { PencilSquareIcon,UserPlusIcon,ArchiveBoxIcon} from '@heroicons/react/24/solid'
+import {useNavigate} from "react-router-dom";
 //RekapNilai
 const DataMurid = () => {
     const [adminData, setAdminData] = useState({});
     const [kelasData, setKelasData] = useState([]);
-    const [selectedKelas, setSelectedKelas] = useState('');
+    const [selectedIdKelasKelas, setSelectedIdKelasKelas] = useState('');
     const [muridData, setMuridData] = useState([]);
     const [activeMurid, setActiveMurid] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedGender, setSelectedGender] = useState('');
+    const [dispidKelas, setdispidKelas] = useState('');
+    const [dataAdmin, setDataAdmin] = useState([]);
 
     const [showTambahModal, setShowTambahModal] = useState(false);
 
@@ -28,23 +31,39 @@ const DataMurid = () => {
     };
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-
         if (user) {
             setAdminData(user);
         }
+
+        const fetchAdminData = async () => {
+            try {
+                const responseAdmin = await axios.get('http://192.168.0.3:5000/admin/all');
+                setDataAdmin(responseAdmin.data);
+            } catch (e) {
+                console.error('Error fetching admin data:', e);
+            }
+        };
+
+        fetchAdminData();
         fetchData();
     }, []);
 
-    const handleLoadMurid = async () => {
-        if (selectedKelas) {
-            console.log(selectedKelas)
 
+    const handleLoadMurid = async () => {
+        if (selectedIdKelasKelas) {
+            console.log(selectedIdKelasKelas)
             try {
-                const response = await axios.get(`http://192.168.0.3:5000/kelas/murid/all/${selectedKelas}`);
+                const response = await axios.get(`http://192.168.0.3:5000/kelas/murid/all/${selectedIdKelasKelas}`);
                 setMuridData(response.data);
+
             } catch (error) {
                 console.error('Terjadi kesalahan saat memuat data murid:', error);
             }
+            const matchingAdmin =  dataAdmin.find(admin => admin.id_kelas === parseInt(selectedIdKelasKelas));
+            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${selectedIdKelasKelas} `);
+
+
+
         }
     };
 
@@ -67,7 +86,7 @@ const DataMurid = () => {
     };
 
     const handleCloseTambahModal = () => {
-        // console.log(selectedKelas)
+        // console.log(selectedIdKelasKelas)
         setShowTambahModal(false);
     };
 
@@ -75,7 +94,7 @@ const DataMurid = () => {
         handleLoadMurid(); // Refresh data murid
         setShowTambahModal(false);
     };
-
+    const navigate = useNavigate();
     return (
         <div> <Navbar/>
         <div className="grid w-screen place-items-center">
@@ -84,12 +103,12 @@ const DataMurid = () => {
                 <ButtonGroup onChange={(gender) => setSelectedGender(gender)} />
             </div>
 
-            <div className="mb-4 mt-1 ">
+            <div className="mb-1 mt-1 ">
 
                 <select
                     className="mt-5 p-2 border border-gray-300 rounded"
-                    onChange={(e) => setSelectedKelas(e.target.value)}
-                    value={selectedKelas}
+                    onChange={(e) => setSelectedIdKelasKelas(e.target.value)}
+                    value={selectedIdKelasKelas}
                 >
                     <option value="">Pilih Kelas</option>
                     {kelasData.filter(kelas => kelas.gender.includes(selectedGender)).map(kelas => (
@@ -105,22 +124,17 @@ const DataMurid = () => {
                     Proses
                 </button>
             </div>
+            <p className="mb-3 text-blue-500 text-xs font-bold"> {dispidKelas}</p>
+
             <div className="mb-4 flex justify-end">
-            <UserPlusIcon className="mr-2  p-1 h-10 w-10 bg-orange-500 border border-orange-700 rounded  " aria-hidden="true" color="white" onClick={handleTambahMurid}/>
-
-                <ArchiveBoxIcon className="  p-1 h-10 w-10 bg-orange-500 border border-orange-700 rounded  " aria-hidden="true" color="white" onClick={handleTambahMurid}/>
+                <UserPlusIcon className="mr-2  p-1 h-10 w-10 bg-orange-500 border border-orange-700 rounded  " aria-hidden="true" color="white" onClick={handleTambahMurid}/>
+                <ArchiveBoxIcon className="  p-1 h-10 w-10 bg-orange-500 border border-orange-700 rounded  " aria-hidden="true" color="white" onClick={()=> navigate('/murid-boyong')}/>
             </div>
-            {/*<button*/}
-            {/*    onClick={handleTambahMurid}*/}
 
-            {/*    className="mb-4 px-4 py-2 border border-orange-600 text-black rounded mt-4"*/}
-            {/*>*/}
-            {/*    Tambah Murid*/}
-            {/*</button>*/}
 
-            {showTambahModal && (
+            {showTambahModal && selectedIdKelasKelas&&(
                 <TambahMuridModal
-                    kelasTerpilih={selectedKelas}
+                    kelasTerpilih={selectedIdKelasKelas}
                     kelasdata={kelasData}
                     onClose={handleCloseTambahModal}
                     onSave={handleSaveTambahModal}
@@ -169,7 +183,7 @@ const DataMurid = () => {
                 <EditModalPermurid
                     dataMuridDipilih={activeMurid}
                     listOfKelas={kelasData}
-                    apakahSama={isAuthorized(adminData,parseInt(selectedKelas))}
+                    apakahSama={isAuthorized(adminData,parseInt(selectedIdKelasKelas))}
                     onClose={handleCloseModal}
                     onSave={handleSaveModal}
                 />
@@ -186,7 +200,7 @@ const DataMurid = () => {
         }
 
         // Jika bukan super_admin, bandingkan id_kelas
-        return admin.id_kelas === parseInt(selectedKelas);
+        return admin.id_kelas === parseInt(selectedIdKelasKelas);
     }
 
 };
