@@ -5,6 +5,8 @@ import logo from '../logo_ppds.png'
 import axios from "axios";
 import {useLocation, useNavigate,Link } from "react-router-dom";
 import './pages/gaya.css'
+import baseURL from "../config.js";
+
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -15,7 +17,7 @@ export default function Navbar() {
     const location = useLocation();
 
     const handleLogout = async () => {
-        await axios.post('http://192.168.0.3:5000/logout')
+        await axios.post(`${baseURL}/logout`)
         localStorage.removeItem('user');
         localStorage.clear();
         navigate('/auth');

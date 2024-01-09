@@ -1,6 +1,8 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Navbar from "../../Navbar.jsx";
+import baseURL from "../../../config.js";
+
 
 export const MuridBoyongPage = () => {
     const [dataMuridBoyong, setDataMuridBoyong] = useState([]);
@@ -9,7 +11,7 @@ export const MuridBoyongPage = () => {
 
     // Fetch data from server
     useEffect(() => {
-        axios.get(`http://192.168.0.3:5000/murid/boyong-pgnt?page=${currentPage}`)
+        axios.get(`${baseURL}/murid/boyong-pgnt?page=${currentPage}`)
             .then(response => {
                 setDataMuridBoyong(response.data.data);
                 setCurrentPage(response.data.currentPage);
@@ -27,14 +29,14 @@ export const MuridBoyongPage = () => {
 
     // Handle save button click
     const handleSaveClick = (murid) => {
-        axios.patch(`http://192.168.0.3:5000/murid/${murid.id_murid}`, murid)
+        axios.patch(`${baseURL}/murid/${murid.id_murid}`, murid)
             .then(() => fetchDataAgain())
             .catch(error => console.error('Error updating data:', error));
     };
 
     // Function to fetch data again
     const fetchDataAgain = () => {
-        axios.get(`http://192.168.0.3:5000/murid/boyong-pgnt?page=${currentPage}`)
+        axios.get(`${baseURL}/murid/boyong-pgnt?page=${currentPage}`)
             .then(response => {
                 setDataMuridBoyong(response.data.data);
                 setCurrentPage(response.data.currentPage);

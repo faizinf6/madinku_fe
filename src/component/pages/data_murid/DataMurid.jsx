@@ -5,8 +5,10 @@ import axios from 'axios';
 import ButtonGroup from "./ButtonGroup.jsx";
 import EditModalPermurid from "./EditModalPermurid.jsx";
 import TambahMuridModal from "./TambahMuridModal.jsx";
-import { PencilSquareIcon,UserPlusIcon,ArchiveBoxIcon} from '@heroicons/react/24/solid'
+import { UserPlusIcon,ArchiveBoxIcon} from '@heroicons/react/24/solid'
 import {useNavigate} from "react-router-dom";
+import baseURL from "../../../config.js";
+
 //RekapNilai
 const DataMurid = () => {
     const [adminData, setAdminData] = useState({});
@@ -23,7 +25,7 @@ const DataMurid = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.0.3:5000/kelas/data');
+            const response = await axios.get(`${baseURL}/kelas/data`);
             setKelasData(response.data);
         } catch (error) {
             console.error('Terjadi kesalahan saat memuat data:', error);
@@ -33,11 +35,14 @@ const DataMurid = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {
             setAdminData(user);
+        }else {
+
+
         }
 
         const fetchAdminData = async () => {
             try {
-                const responseAdmin = await axios.get('http://192.168.0.3:5000/admin/all');
+                const responseAdmin = await axios.get(`${baseURL}/admin/all`);
                 setDataAdmin(responseAdmin.data);
             } catch (e) {
                 console.error('Error fetching admin data:', e);
@@ -45,6 +50,9 @@ const DataMurid = () => {
         };
 
         fetchAdminData();
+
+        console.log(user)
+
         fetchData();
     }, []);
 
@@ -53,7 +61,7 @@ const DataMurid = () => {
         if (selectedIdKelasKelas) {
             console.log(selectedIdKelasKelas)
             try {
-                const response = await axios.get(`http://192.168.0.3:5000/kelas/murid/all/${selectedIdKelasKelas}`);
+                const response = await axios.get(`${baseURL}/kelas/murid/all/${selectedIdKelasKelas}`);
                 setMuridData(response.data);
 
             } catch (error) {
@@ -144,39 +152,40 @@ const DataMurid = () => {
             <table className=" table-auto border-collapse border border-gray-300">
                 <thead>
                 <tr>
+                    <th className="px-4 py-2">No</th>
                     <th className="px-4 py-2">ID</th>
                     <th className="px-4 py-2">Nama</th>
-                    <th className="px-4 py-2">Status?</th>
+                    {/*<th className="px-4 py-2">Status?</th>*/}
                     <th className="px-4 py-2">Aksi</th>
                 </tr>
                 </thead>
                 <tbody>
-                {muridData.map(kelas => (
-                    kelas.Murids.map((murid,index)=>(
-                        <tr key={murid.id_murid} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
-                            <td className="border border-gray-300 px-4 py-2">{murid.id_murid}</td>
-                            <td className="border border-gray-300 px-4 py-2">{murid.nama_murid}</td>
-                            <td className="border border-gray-300 px-4 py-2">{murid.isBoyong ? 'Ya' : '-'}</td>
-                            <td className="border border-gray-300 px-4 py-2">
+                {muridData.reduce((acc, kelas, kelasIndex) => {
+                    const rows = kelas.Murids.map((murid, index) => {
+                        const rowNumber = acc.count + index + 1;
+                        const displayNumber = murid.nama_murid.length > 3 ? rowNumber : "-";
 
-
-                                <button
-                                    // className="px-4 py-2 bg-teal-500 text-white rounded"
-                                    className="px-3 py-1.5 border bg-gray-600 text-white rounded mt-4"
-
-                                    onClick={() => handleShowMurid(murid)}
-                                >Edit
-                                </button>
-                            </td>
-                        </tr>
-
-
-
-                    ))
-
-
-                ))}
+                        return (
+                            <tr key={murid.id_murid} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
+                                <td className="border border-gray-300 px-4 py-1">{displayNumber}</td>
+                                <td className="border border-gray-300 px-4 py-2">{murid.id_murid}</td>
+                                <td className="border border-gray-300 px-4 py-2">{murid.nama_murid}</td>
+                                {/*<td className="border border-gray-300 px-4 py-2">{murid.isBoyong ? 'Ya' : '-'}</td>*/}
+                                <td className="border border-gray-300 px-4 py-2">
+                                    <button
+                                        className="px-3 py-1.5 border bg-gray-600 text-white rounded mt-4"
+                                        onClick={() => handleShowMurid(murid)}
+                                    >Edit</button>
+                                </td>
+                            </tr>
+                        );
+                    });
+                    acc.rows.push(...rows);
+                    acc.count += kelas.Murids.length;
+                    return acc;
+                }, { rows: [], count: 0 }).rows}
                 </tbody>
+
             </table>
 
             {showModal && activeMurid && (

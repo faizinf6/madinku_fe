@@ -1,6 +1,9 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import logo from "../../../logo_ppds.png";
+import baseURL from "../../../config.js";
+
 
 export const Auth = () => {
     const [nama, setNama] = useState('');
@@ -12,7 +15,7 @@ export const Auth = () => {
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://192.168.0.3:5000/auth', {
+            const response = await axios.post(`${baseURL}/auth`, {
                 no_hp: no_hp,
                 password: password
             });
@@ -59,9 +62,9 @@ export const Auth = () => {
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img
-                    className="mx-auto h-10 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                    alt="Your Company"
+                    className="mx-auto h-24 w-auto"
+                    src= {logo}
+                    alt="Madinku"
                 />
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
                     Silahkan masuk menggunakan Akun Anda.
@@ -72,7 +75,7 @@ export const Auth = () => {
                 <form className="space-y-6" action="#" method="POST">
                     <div>
                         <label className="block text-sm font-medium leading-6 text-gray-900">
-                            Nomor Hape
+                            Nomor Hape (format: 628xxx)
                         </label>
                         <div className="mt-2">
                             <input
@@ -92,7 +95,8 @@ export const Auth = () => {
                                 Password
                             </label>
                             <div className="text-sm">
-                                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                <a href={`https://wa.me/6285788778671`} target="_blank" rel="noopener noreferrer" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+
                                     Lupa Password?
                                 </a>
                             </div>

@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import Navbar from "../../Navbar.jsx";
 import QRCard from './QRCard';
 import axios from "axios";
+import baseURL from "../../../config.js";
 
 export const UjianQrPage = () => {
     const [idMuridInput, setIdMuridInput] = useState(''); // For storing the input
@@ -188,7 +189,7 @@ export const UjianQrPage = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get('http://192.168.0.3:5000/nilai/taftisan/all');
+            const response = await axios.get(`${baseURL}/nilai/taftisan/all`);
             localStorage.setItem('dataTaftisan', JSON.stringify(response.data));
             setDataTaftisan(response.data);
 

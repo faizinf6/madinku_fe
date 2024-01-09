@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from "../../../Navbar.jsx";
+import baseURL from "../../../../config.js";
 
 export const ListMustahiq = () => {
     const [dataAdmin, setDataAdmin] = useState([]);
@@ -10,8 +11,8 @@ export const ListMustahiq = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const responseAdmin = await axios.get('http://192.168.0.3:5000/admin/all');
-                const responseKelas = await axios.get('http://192.168.0.3:5000/kelas/data');
+                const responseAdmin = await axios.get(`${baseURL}/admin/all`);
+                const responseKelas = await axios.get(`${baseURL}/kelas/data`);
                 setDataAdmin(responseAdmin.data);
                 setDataKelas(responseKelas.data);
             } catch (error) {
@@ -20,7 +21,12 @@ export const ListMustahiq = () => {
         };
         fetchData();
     }, []);
+    const isValidPhoneNumber = (phoneNumber) => {
+        // Convert phoneNumber to a string if it's not already
+        const phoneNumberStr = phoneNumber.toString();
 
+        return phoneNumberStr.startsWith('628');
+    };
 
     return (
         <div>
@@ -48,14 +54,14 @@ export const ListMustahiq = () => {
                             {/*<td className="px-4 py-2 text-xs">{kelas.gender}</td>*/}
                             <td className="px-4 py-2 whitespace-nowrap">{admin ? admin.nama_admin : 'No Admin'}</td>
                             <td>
-                            {admin && admin.no_hp ? (
-                                <a href={`https://wa.me/${admin.no_hp}`} target="_blank" rel="noopener noreferrer"
-                                   className=" bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
-                                    Wa
-                                </a>
-                            ) : (
-                                <p className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"> X </p>
-                            )}
+                                {admin && admin.no_hp && isValidPhoneNumber(admin.no_hp) ? (
+                                    <a href={`https://wa.me/${admin.no_hp}`} target="_blank" rel="noopener noreferrer"
+                                       className=" bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
+                                        Wa
+                                    </a>
+                                ) : (
+                                    <p className="bg-gray-200 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"> X </p>
+                                )}
                             </td>
                         </tr>
                     );

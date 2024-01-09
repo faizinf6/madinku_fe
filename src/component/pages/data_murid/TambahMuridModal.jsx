@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
+import baseURL from "../../../config.js";
 
 const TambahMuridModal = ({ kelasTerpilih,kelasdata, onClose, onSave }) => {
     const [namaMurid, setNamaMurid] = useState('');
@@ -12,7 +13,7 @@ const TambahMuridModal = ({ kelasTerpilih,kelasdata, onClose, onSave }) => {
     }, []);
     const idMuridTerakhir = async ()=>{
         try {
-            const res = await axios.get('http://192.168.0.3:5000/murid/terakhirsopo')
+            const res = await axios.get(`${baseURL}/murid/terakhirsopo`)
         setMuridTerakhir(res.data)
         }catch (e) {
 
@@ -22,7 +23,7 @@ const TambahMuridModal = ({ kelasTerpilih,kelasdata, onClose, onSave }) => {
 
     const handleSubmit = async () => {
         try {
-            await axios.post('http://192.168.0.3:5000/murid/tambah/', {
+            await axios.post(`${baseURL}/murid/tambah/`, {
                 id_murid:muridTerakhir+1,
                 nama_murid: namaMurid,
                 id_kelas: idKelasMurid,
@@ -66,7 +67,7 @@ const TambahMuridModal = ({ kelasTerpilih,kelasdata, onClose, onSave }) => {
                     onClick={onClose}
                     className="mt-2 px-4 py-2 bg-red-500 text-white rounded w-full"
                 >
-                    Close
+                    Tutup
                 </button>
             </div>
         </div>

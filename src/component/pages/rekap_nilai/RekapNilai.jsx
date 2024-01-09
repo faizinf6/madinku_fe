@@ -6,6 +6,7 @@ import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TabelRapot from "./TabelRapot.jsx";
 import '../gaya.css'
+import baseURL from "../../../config.js";
 
 
 //RekapNilai
@@ -48,10 +49,12 @@ const RekapNilai = () => {
     const allowedPattern = /^\d{0,2}(\.|,)?\d{0,1}$/;
 
     const fetchDataKehadiran = async () => {
+
+        if (idSelectedKelas!==0) //bila id kelas bukan nol, kalau nol nggak di eksekusi
         try {
 
             const responseKehadiranDataMurid = await axios.get(
-                `http://192.168.0.3:5000/murid/kehadiran/perkelas/${idSelectedKelas}`)
+                `${baseURL}/murid/kehadiran/perkelas/${idSelectedKelas}`)
 
 
             setdataMuridDanKehadiran(responseKehadiranDataMurid.data);
@@ -87,9 +90,10 @@ const RekapNilai = () => {
 
         const updatedKehadiran = kehadiran[murid.id_murid] || murid.kehadiran;
 
+        if (isAuthorized(adminData,idSelectedKelas)){
         try {
 
-            const response = await axios.patch(`http://192.168.0.3:5000/murid/kehadiran/${murid.id_murid}`, {
+            const response = await axios.patch(`${baseURL}/murid/kehadiran/${murid.id_murid}`, {
                 alpha: updatedKehadiran.alpha,
                 izin: updatedKehadiran.izin,
                 sakit: updatedKehadiran.sakit
@@ -108,7 +112,12 @@ const RekapNilai = () => {
         setKehadiranAsli(prev => ({
             ...prev,
             [murid.id_murid]: { ...updatedKehadiran }
-        }));
+        }));}
+        else {
+            toast.error(`Anda bukan Mustahiq Kelas ini`, {autoClose: 3100,});
+
+
+        }
 
 
     };
@@ -131,7 +140,7 @@ const RekapNilai = () => {
 
     const fetchDataKelas = async () => {
         try {
-            const response = await axios.get('http://192.168.0.3:5000/kelas/data');
+            const response = await axios.get(`${baseURL}/kelas/data`);
             setKelasData(response.data);
         } catch (error) {
             console.error('Terjadi kesalahan saat memuat data:', error);
@@ -147,12 +156,12 @@ const RekapNilai = () => {
 
             try {
                 const response = await axios.get(
-                    `http://192.168.0.3:5000/kelas/mapel/all/${idSelectedKelas}`
+                    `${baseURL}/kelas/mapel/all/${idSelectedKelas}`
                 );
 
-                const muhafadzohMapel = response.data.find(mapel => mapel.nama_mapel === "Muhafadzoh");
+                // const muhafadzohMapel = response.data.find(mapel => mapel.nama_mapel === "Muhafadzoh");
                 // await fetchDataNilaiHafalan(muhafadzohMapel)
-                console.log(muhafadzohMapel)
+                // console.log(muhafadzohMapel)
 
                 // Check if the response data is empty
                 if (response.data && response.data.length === 0) {
@@ -181,6 +190,9 @@ const RekapNilai = () => {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user) {setAdminData(user);}
+
+        // console.log(idSelectedKelas)
+
         fetchDataKelas();
     }, []);
 
@@ -189,7 +201,7 @@ const RekapNilai = () => {
         if (mapelId && idSelectedKelas) {
             try {
                 const responseDataMurid = await axios.get(
-                    `http://192.168.0.3:5000/nilai/rekap?id_kelas=${idSelectedKelas}&id_mapel=${mapelId}`
+                    `${baseURL}/nilai/rekap?id_kelas=${idSelectedKelas}&id_mapel=${mapelId}`
                 );
                 setDataMuridDanNilainya(responseDataMurid.data);
 
@@ -207,11 +219,11 @@ const RekapNilai = () => {
         if (mapelId && idSelectedKelas) {
             try {
                 const responseDataMurid = await axios.get(
-                    `http://192.168.0.3:5000/nilai/hafalan?id_kelas=${idSelectedKelas}`
+                    `${baseURL}/nilai/hafalan?id_kelas=${idSelectedKelas}`
                 );
 
                 const response= await axios.get(
-                    `http://192.168.0.3:5000/nilai/rekap?id_kelas=${idSelectedKelas}&id_mapel=${mapelId}`
+                    `${baseURL}/nilai/rekap?id_kelas=${idSelectedKelas}&id_mapel=${mapelId}`
                 );
 
                 const mergedData = response.data.map(murid => {
@@ -258,9 +270,10 @@ const RekapNilai = () => {
         const originalScore = student.isi_nilai;
         const updatedScore = editedScores[student.id_murid] || student.isi_nilai;
 
+        if (isAuthorized(adminData,idSelectedKelas)){
         try {
             const responseDataMurid = await axios.patch(
-                `http://192.168.0.3:5000/nilai/update?id=${student.id_murid}&id_kelas=${idSelectedKelas}&id_mapel=${student.id_mapel}&isi_nilai=${updatedScore}`
+                `${baseURL}/nilai/update?id=${student.id_murid}&id_kelas=${idSelectedKelas}&id_mapel=${student.id_mapel}&isi_nilai=${updatedScore}`
             );
             // Handle the response as needed
 
@@ -277,6 +290,10 @@ const RekapNilai = () => {
         } catch (error) {
 
             toast.error(`Error updating data ${error}`, {autoClose: 3100,});
+
+        }} else {
+            toast.error(`Anda Bukan Mustahiq Kelas ini`, {autoClose: 3100,});
+
 
         }
     };
@@ -314,7 +331,7 @@ const RekapNilai = () => {
 
 
             const response = await axios.get(
-                `http://192.168.0.3:5000/murid/rapot/${idSelectedKelas}`
+                `${baseURL}/murid/rapot/${idSelectedKelas}`
             );
             // Set the response text to state
             setdataRapotJson(response.data);
@@ -374,7 +391,7 @@ const RekapNilai = () => {
 
         try {
 
-            const response = await axios.patch(`http://192.168.0.3:5000/nilai/hafalan/update`, {
+            const response = await axios.patch(`${baseURL}/nilai/hafalan/update`, {
                 id_murid: murid.id_murid,
                 pencapaian: nilaihafalanMurid.pencapaian,
                 kelancaran: nilaihafalanMurid.kelancaran,
@@ -383,7 +400,7 @@ const RekapNilai = () => {
 
             const rata2 =(nilaihafalanMurid.pencapaian+nilaihafalanMurid.kelancaran+nilaihafalanMurid.artikulasi)/3.0
             const responseUpdateNilaiHafalanUtama = await axios.patch(
-                `http://192.168.0.3:5000/nilai/update?id=${murid.id_murid}&id_kelas=${idSelectedKelas}&id_mapel=${murid.id_mapel}&isi_nilai=${rata2}`
+                `${baseURL}/nilai/update?id=${murid.id_murid}&id_kelas=${idSelectedKelas}&id_mapel=${murid.id_mapel}&isi_nilai=${rata2}`
             );
 
 
@@ -959,6 +976,22 @@ const RekapNilai = () => {
 
 
 };
+
+function isAuthorized(admin,selectedIdKelas) {
+
+    // Jika admin adalah super_admin, abaikan perbandingan dan kembalikan true
+    if (admin.super_admin) {
+        return true;
+    }
+
+    return admin.id_kelas === parseInt(selectedIdKelas);
+}
+function isSuperAdmin(admin) {
+
+    return admin.super_admin
+}
+
+
 
 export default RekapNilai;
 

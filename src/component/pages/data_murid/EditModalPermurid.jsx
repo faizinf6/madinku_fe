@@ -1,6 +1,7 @@
 
     import React, { useState } from 'react';
     import axios from 'axios';
+    import baseURL from "../../../config.js";
 
     const EditModalPermurid = ({ dataMuridDipilih, listOfKelas, onClose, onSave,apakahSama }) => {
         const [namaMurid, setNamaMurid] = useState(dataMuridDipilih.nama_murid);
@@ -8,7 +9,7 @@
         const [isBoyong, setIsBoyong] = useState(dataMuridDipilih.isBoyong);
         const handleSubmit = async () => {
             try {
-                await axios.patch(`http://192.168.0.3:5000/murid/${dataMuridDipilih.id_murid}`, {
+                await axios.patch(`${baseURL}/murid/${dataMuridDipilih.id_murid}`, {
                     id_murid: dataMuridDipilih.id_murid,
                     nama_murid: namaMurid,
                     id_kelas: kelasMurid,
@@ -62,7 +63,7 @@
                                     onClick={handleSubmit}
                                     className="px-4 py-2 bg-blue-500 text-white rounded w-full"
                                 >
-                                    Submit
+                                    Simpan
                                 </button>
                             </>
                         ):(
@@ -72,9 +73,8 @@
 
                     <button
                         onClick={onClose}
-                        className="mt-2 px-4 py-2 bg-red-500 text-white rounded w-full"
-                    >
-                        Close
+                        className="mt-2 px-4 py-2 bg-red-500 text-white rounded w-full">
+                        Tutup
                     </button>
                 </div>
             </div>

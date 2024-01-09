@@ -8,7 +8,7 @@ import { Auth } from "./component/pages/auth/Auth.jsx";
 import AuthRedirect from './component/pages/auth/AuthRedirect.jsx';
 import RekapNilai from "./component/pages/rekap_nilai/RekapNilai.jsx";
 import {Informasi} from "./component/pages/Informasi.jsx";
-import Taftisan from "./component/pages/taftisan/Taftisan.jsx";
+import PanelUjian from "./component/pages/taftisan/PanelUjian.jsx";
 import {ProfilUser} from "./component/pages/ProfilUser.jsx";
 import {ListMustahiq} from "./component/pages/informasi/list_mustahiq/ListMustahiq.jsx";
 import {MuridBoyongPage} from "./component/pages/data_murid/MuridBoyongPage.jsx";
@@ -26,7 +26,7 @@ function App() {
                     <Route path="/data-murid" element={<DataMurid />} />
                     <Route path="/rekap-nilai" element={<RekapNilai />} />
                     <Route path="/informasi" element={<Informasi />} />
-                    <Route path="/taftisan" element={< Taftisan/>} />
+                    <Route path="/taftisan" element={< PanelUjian/>} />
                     <Route path="/profil-pengguna" element={< ProfilUser/>} />
                     <Route path="/list-mustahiq" element={< ListMustahiq/>} />
                     <Route path="/murid-boyong" element={< MuridBoyongPage/>} />

@@ -10,22 +10,23 @@ import {useNavigate} from "react-router-dom";
 import Navbar from "../../Navbar.jsx";
 
 import {toast, ToastContainer} from "react-toastify";
+import baseURL from "../../../config.js";
 //RekapNilai
-const Taftisan = () => {
+const PanelUjian = () => {
     const [adminData, setAdminData] = useState({});
     const [kelasData, setKelasData] = useState([]);
-    const [selectedIdKelasKelas, setSelectedIdKelasKelas] = useState('');
+    const [selectedIdKelas, setSelectedIdKelas] = useState('');
     const [dataTaftisanMurid, setDataTaftisanMurid] = useState([]);
     const [dataTaftisanDipilih, setDataTaftisanDipilih] = useState(null);
     const [showModaltaftisan, setShowModaltaftisan] = useState(false);
     const [selectedGender, setSelectedGender] = useState('');
-    const [dataAdmin, setDataAdmin] = useState([]);
+    const [dataAllAdmin, setDataAllAdmin] = useState([]);
     const [dispidKelas, setdispidKelas] = useState('');
 
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://192.168.0.3:5000/kelas/data');
+            const response = await axios.get(`${baseURL}/kelas/data`);
             setKelasData(response.data);
         } catch (error) {
             console.error('Terjadi kesalahan saat memuat data:', error);
@@ -37,10 +38,11 @@ const Taftisan = () => {
             setAdminData(user);
         }
 
+        console.log(user)
         const fetchAdminData = async () => {
             try {
-                const responseAdmin = await axios.get('http://192.168.0.3:5000/admin/all');
-                setDataAdmin(responseAdmin.data);
+                const responseAdmin = await axios.get(`${baseURL}/admin/all`);
+                setDataAllAdmin(responseAdmin.data);
             } catch (e) {
                 console.error('Error fetching admin data:', e);
             }
@@ -51,11 +53,11 @@ const Taftisan = () => {
     }, []);
 
     const handleLoadMurid = async () => {
-        if (selectedIdKelasKelas) {
-            // console.log(selectedIdKelasKelas)
+        if (selectedIdKelas) {
+            // console.log(selectedIdKelas)
 
             try {
-                const response = await axios.get(`http://192.168.0.3:5000/nilai/taftisan?id_kelas=${selectedIdKelasKelas}`);
+                const response = await axios.get(`${baseURL}/nilai/taftisan?id_kelas=${selectedIdKelas}`);
                 // console.log(response.data)
                 setDataTaftisanMurid(response.data);
 
@@ -63,8 +65,8 @@ const Taftisan = () => {
                 console.error('Terjadi kesalahan saat memuat data murid:', error);
             }
 
-            const matchingAdmin =  dataAdmin.find(admin => admin.id_kelas === parseInt(selectedIdKelasKelas));
-            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${selectedIdKelasKelas} `);
+            const matchingAdmin =  dataAllAdmin.find(admin => admin.id_kelas === parseInt(selectedIdKelas));
+            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${selectedIdKelas} `);
 
         }
     };
@@ -131,43 +133,41 @@ const Taftisan = () => {
         const changes = findChanges();
 
         if (changes.length === 0) {
-            toast(`Tidak ada perubahan disimpan`, {
+            toast.warning(`Tidak ada perubahan,tidak disimpan`, {
                 position: "top-center",
                 autoClose: 1100,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
+
             });
             return;
         }
 
 
-
+        if(isAuthorized(adminData,selectedIdKelas)){
         try {
-            await axios.patch('http://192.168.0.3:5000/nilai/update/taftisan', changes);
-             toast(`Perubahan disimpan`, {
+            await axios.patch(`${baseURL}/nilai/update/taftisan`, changes);
+             toast.success(`Perubahan disimpan`, {
                 position: "top-center",
                 autoClose: 1100,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
             });
 
             // setDataTaftisanMurid(currentData);
             await handleLoadMurid()
 
-            console.log(dataTaftisanMurid)
+
 
         } catch (error) {
             console.error('Gagal menyimpan perubahan:', error);
         }
 
+        setShowModaltaftisan(false);}
+        else {
+            toast.error(`Anda bukan Mustahiq Kelas ini, Silahkan hubungi pengurus`, {
+                position: "top-center",
+                autoClose: 3100,
 
-        setShowModaltaftisan(false);
+            });
+
+        }
 
     };
 
@@ -187,8 +187,8 @@ const Taftisan = () => {
                 <div className="mb-1 mt-1 ">
                     <select
                         className="mt-5 p-2 border border-gray-300 rounded"
-                        onChange={(e) => setSelectedIdKelasKelas(e.target.value)}
-                        value={selectedIdKelasKelas}
+                        onChange={(e) => setSelectedIdKelas(e.target.value)}
+                        value={selectedIdKelas}
                     >
                         <option value="">Pilih Kelas</option>
                         {kelasData.filter(kelas => kelas.gender.includes(selectedGender)).map(kelas => (
@@ -350,7 +350,7 @@ const Taftisan = () => {
         </div>
     );
 
-    function isAuthorized(admin, kelas) {
+    function isAuthorized(admin,selectedIdKelas) {
 
         // Jika admin adalah super_admin, abaikan perbandingan dan kembalikan true
         if (admin.super_admin) {
@@ -358,12 +358,19 @@ const Taftisan = () => {
         }
 
         // Jika bukan super_admin, bandingkan id_kelas
-        return admin.id_kelas === parseInt(selectedIdKelasKelas);
+        console.log(selectedIdKelas)
+        console.log(admin.id_kelas)
+        return admin.id_kelas === parseInt(selectedIdKelas);
+    }
+
+    function isSuperAdmin(admin) {
+
+        return admin.super_admin
     }
 
 };
 
-export default Taftisan;
+export default PanelUjian;
 
 
 //DataMurid

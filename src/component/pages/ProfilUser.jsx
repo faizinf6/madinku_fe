@@ -2,6 +2,7 @@ import Navbar from "../Navbar.jsx";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {toast, ToastContainer} from "react-toastify";
+import baseURL from "../../config.js";
 
 export const ProfilUser = () => {
     const [admin, setAdmin] = useState({});
@@ -48,7 +49,7 @@ export const ProfilUser = () => {
         setIsSaving(true);
         try {
             // First, update the admin data
-            const updateResponse = await axios.patch('http://192.168.0.3:5000/admin/update', admin);
+            const updateResponse = await axios.patch(`${baseURL}/admin/update`, admin);
             if (updateResponse.data) {
                 // Update successful, now update local storage
                 localStorage.setItem('user', JSON.stringify({...admin, password: undefined}));

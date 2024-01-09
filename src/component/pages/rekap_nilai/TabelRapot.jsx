@@ -32,10 +32,46 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
     // Menghitung grand total dan rata-rata
     Object.values(groupedData).forEach(murid => {
         murid.grandTotal = murid.total - murid.pelanggaran;
-        murid.average = (murid.grandTotal / murid.count).toFixed(1); // Memastikan satu tempat desimal
+        murid.average = (murid.grandTotal / murid.count);
     });
 
-    const tableRows = Object.values(groupedData).map((murid, index) => (
+    const sortedData = Object.values(groupedData).sort((a, b) => b.grandTotal - a.grandTotal);
+
+    // Compute rankings based on grandTotal
+    let rank = 1;
+    for (let i = 0; i < sortedData.length; i++) {
+        if (i > 0 && sortedData[i].grandTotal === sortedData[i - 1].grandTotal) {
+            sortedData[i].rank = sortedData[i - 1].rank; // Same rank for equal grandTotals
+        } else {
+            sortedData[i].rank = rank;
+        }
+        rank++;
+    }
+
+
+    //JANGAN DI HAPUS YA BAAAAANG!
+    // ini kalau mau sort rangking berdasarkan nilai rata-rata murid
+    // const sortedMurids = Object.values(groupedData).sort((a, b) => b.average - a.average);
+    //
+    // // Rank the students, handling ties
+    // let rank = 1;
+    // sortedMurids.forEach((murid, index) => {
+    //     if (index > 0 && murid.average === sortedMurids[index - 1].average) {
+    //         murid.rank = sortedMurids[index - 1].rank;
+    //     } else {
+    //         murid.rank = rank;
+    //     }
+    //     rank++;
+    // });
+
+    const formatNumber = (number) => {
+        // Round to two decimal places
+        let formattedNumber = Math.round(number * 100) / 100;
+        // Convert to string and remove trailing zeros
+        return formattedNumber.toString().replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+    };
+
+    const tableRows = sortedData.map((murid, index) => (
         <tr key={murid.nama_murid} className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'}`}>
             <td className={`sticky left-0 font-bold  px-4 py-2 ${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} ` }>{murid.nama_murid}</td>
             {fanHeaders.map(fan => {
@@ -51,13 +87,16 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
             <td className="border px-4 py-2">{(murid.total).toFixed(1)}</td>
             <td className="border px-4 py-2">{(murid.pelanggaran)}</td>
             <td className="border px-4 py-2">{(murid.grandTotal).toFixed(1)}</td>
-            <td className={`border px-4 py-2 ${parseFloat(murid.average) <= 5.5 ? 'bg-red-600 text-white' : ''}`}>
-                {(murid.average)}
+            <td className={`border px-4 py-2 ${parseFloat((murid.average)) <= 5.5 ? 'bg-red-600 text-white' : ''}`}>
+                {formatNumber(parseFloat(murid.average))}
             </td>
+            <td className="border px-4 py-2">{murid.rank}</td> {/* New column for ranking */}
 
             <td className="border px-4 py-2">{murid.nama_murid}</td>
         </tr>
     ));
+
+
 
     return (
         <table className="min-w-full table-auto border-collapse border border-gray-300">
@@ -69,6 +108,8 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
                 <th className="border px-4 py-2 sticky bg-yellow-300">Pelanggaran</th>
                 <th className="border px-4 py-2 sticky bg-yellow-300">Grand Total</th>
                 <th className="border px-4 py-2 sticky bg-yellow-300">Rata-rata</th>
+                <th className="border px-4 py-2 sticky bg-yellow-300">Peringkat</th> {/* New header for ranking */}
+
                 <th className="border px-4 py-2 sticky bg-yellow-300">Nama</th>
             </tr>
             </thead>

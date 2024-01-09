@@ -18,7 +18,7 @@ export const Informasi = () => {
 
                        <div className="p-4 w-1/2">
                            <a href="http://192.168.0.3:3000/list-mustahiq">
-                           <div className=" border-2 border-gray-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
+                           <div className=" bg-white border-2 border-gray-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
                                <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
                                    <circle cx="9" cy="7" r="4"></circle>
@@ -33,16 +33,16 @@ export const Informasi = () => {
 
 
 
-                       <div className="p-4 w-1/2">
-                           <div className="border-2 border-gray-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
-                               <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
-                                   <path d="M3 18v-6a9 9 0 0118 0v6"></path>
-                                   <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"></path>
-                               </svg>
-                               <h2 className="title-font font-medium text-3xl text-gray-900">74</h2>
-                               <p className="leading-relaxed">Files</p>
-                           </div>
-                       </div>
+                       {/*<div className="p-4 w-1/2">*/}
+                       {/*    <div className="border-2 border-gray-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">*/}
+                       {/*        <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">*/}
+                       {/*            <path d="M3 18v-6a9 9 0 0118 0v6"></path>*/}
+                       {/*            <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"></path>*/}
+                       {/*        </svg>*/}
+                       {/*        <h2 className="title-font font-medium text-3xl text-gray-900">74</h2>*/}
+                       {/*        <p className="leading-relaxed">Files</p>*/}
+                       {/*    </div>*/}
+                       {/*</div>*/}
 
 
 
