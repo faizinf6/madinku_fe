@@ -72,13 +72,13 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
     };
 
     const tableRows = sortedData.map((murid, index) => (
-        <tr key={murid.nama_murid} className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'}`}>
+        <tr key={murid.id_murid} className={`${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'}`}>
             <td className={`sticky left-0 font-bold  px-4 py-2 ${index % 2 === 0 ? 'bg-gray-200' : 'bg-white'} ` }>{murid.nama_murid}</td>
             {fanHeaders.map(fan => {
                 const nilai = murid.nilai[fan] || '-';
                 const isHighlighted = nilai !== '-' && nilai <= 5.5;
                 return (
-                    <td key={`${murid.nama_murid}-${fan}`}
+                    <td key={`${murid.id_murid}-${fan}`}
                         className={`border px-4 py-2 ${isHighlighted ? 'font-bold text-red-600' : ''}`}>
                         {(nilai).toFixed(1)}
                     </td>

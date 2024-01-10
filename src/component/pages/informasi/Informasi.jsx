@@ -1,6 +1,9 @@
-import Navbar from "../Navbar.jsx";
+import Navbar from "../../Navbar.jsx";
+import baseURL from "../../../config.js";
+import {useNavigate} from "react-router-dom";
 
 export const Informasi = () => {
+    const navigate = useNavigate();
 
     return (
        <div>
@@ -17,7 +20,7 @@ export const Informasi = () => {
 
 
                        <div className="p-4 w-1/2">
-                           <a href="http://192.168.0.3:3000/list-mustahiq">
+                           <a onClick={()=>{navigate('/list-mustahiq') }}>
                            <div className=" bg-white border-2 border-gray-600 px-4 py-6 rounded-lg transform transition duration-500 hover:scale-110">
                                <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="text-indigo-500 w-12 h-12 mb-3 inline-block" viewBox="0 0 24 24">
                                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>

@@ -59,9 +59,10 @@ const DataMurid = () => {
 
     const handleLoadMurid = async () => {
         if (selectedIdKelasKelas) {
-            console.log(selectedIdKelasKelas)
+            // console.log(selectedIdKelasKelas)
             try {
                 const response = await axios.get(`${baseURL}/kelas/murid/all/${selectedIdKelasKelas}`);
+                console.log(response.data)
                 setMuridData(response.data);
 
             } catch (error) {
@@ -161,7 +162,7 @@ const DataMurid = () => {
                 </thead>
                 <tbody>
                 {muridData.reduce((acc, kelas, kelasIndex) => {
-                    const rows = kelas.Murids.map((murid, index) => {
+                    const rows = kelas.murids.map((murid, index) => {
                         const rowNumber = acc.count + index + 1;
                         const displayNumber = murid.nama_murid.length > 3 ? rowNumber : "-";
 
@@ -181,7 +182,7 @@ const DataMurid = () => {
                         );
                     });
                     acc.rows.push(...rows);
-                    acc.count += kelas.Murids.length;
+                    acc.count += kelas.murids.length;
                     return acc;
                 }, { rows: [], count: 0 }).rows}
                 </tbody>

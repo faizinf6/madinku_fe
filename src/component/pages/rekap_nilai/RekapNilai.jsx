@@ -58,6 +58,7 @@ const RekapNilai = () => {
 
 
             setdataMuridDanKehadiran(responseKehadiranDataMurid.data);
+            console.log(responseKehadiranDataMurid.data)
 
             // Initialize kehadiranAsli with the fetched data
             const fetchedKehadiran = {}; // Create a new object to hold the current values
@@ -222,9 +223,11 @@ const RekapNilai = () => {
                     `${baseURL}/nilai/hafalan?id_kelas=${idSelectedKelas}`
                 );
 
+
                 const response= await axios.get(
                     `${baseURL}/nilai/rekap?id_kelas=${idSelectedKelas}&id_mapel=${mapelId}`
                 );
+                console.log(response)
 
                 const mergedData = response.data.map(murid => {
                     // Find the corresponding entry in dataNilaiHafalan
@@ -519,7 +522,7 @@ const RekapNilai = () => {
                                     {mapel.nama_mapel}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {mapel.Angkatan.nama_angkatan}
+                                    {mapel.angkatan.nama_angkatan}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button

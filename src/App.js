@@ -7,7 +7,7 @@ import Beranda from "./component/pages/Beranda.jsx";
 import { Auth } from "./component/pages/auth/Auth.jsx";
 import AuthRedirect from './component/pages/auth/AuthRedirect.jsx';
 import RekapNilai from "./component/pages/rekap_nilai/RekapNilai.jsx";
-import {Informasi} from "./component/pages/Informasi.jsx";
+import {Informasi} from "./component/pages/informasi/Informasi.jsx";
 import PanelUjian from "./component/pages/taftisan/PanelUjian.jsx";
 import {ProfilUser} from "./component/pages/ProfilUser.jsx";
 import {ListMustahiq} from "./component/pages/informasi/list_mustahiq/ListMustahiq.jsx";
