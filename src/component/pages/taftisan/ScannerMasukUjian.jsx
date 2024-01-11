@@ -1,9 +1,9 @@
 import Navbar from "../../Navbar.jsx";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 
-import { ClockIcon} from '@heroicons/react/24/solid'
+import { ClockIcon,BackwardIcon,FolderArrowDownIcon} from '@heroicons/react/24/solid'
 
 import gagalSuara from './audio/gagal_suara9.mp3';   // Adjust the import path as necessary
 import terlambatSuara from './audio/gagal_suara5.mp3';   // Adjust the import path as necessary
@@ -29,7 +29,7 @@ export const ScannerMasukUjian = () => {
     const [modalBatasWaktu,setModalBatasWaktu] = useState(false)
     const [isLate, setIsLate] = useState(false);
 
-    const [newDeadlineTime, setNewDeadlineTime] = useState("20:45");
+    const [newDeadlineTime, setNewDeadlineTime] = useState("21:15");
     const [foundMuridList, setFoundMuridList] = useState([]);
     const [buttonPressedTime, setButtonPressedTime] = useState('');
 
@@ -86,14 +86,33 @@ export const ScannerMasukUjian = () => {
         }
     };
 
+    const stopSemuaAudio = () => {
+        gagalAudioRef.current.pause();
+        gagalAudioRef.current.currentTime = 0;
+        terlambatAudioRef.current.pause();
+        terlambatAudioRef.current.currentTime = 0;
+    };
+
+
+
     const playGagalAudio = () => {
-        stopAndResetAudio(suksesAudioRef, null); // Stop sukses audio if playing
+        stopSemuaAudio()
         gagalAudioRef.current.play();
         gagalAudioTimeoutRef.current = setTimeout(() => {
             gagalAudioRef.current.pause();
             gagalAudioRef.current.currentTime = 0;
         }, 10000); // Play for 10 seconds
     };
+    const playTerlambatAudio = () => {
+       stopSemuaAudio()
+        terlambatAudioRef.current.play();
+        terlambatAudioRef.current = setTimeout(() => {
+            gagalAudioRef.current.pause();
+            gagalAudioRef.current.currentTime = 0;
+        }, 10000); // Play for 10 seconds
+    };
+
+
 
 
 
@@ -104,9 +123,7 @@ export const ScannerMasukUjian = () => {
         const lateStatus = currentTime > newDeadlineTime;
         console.log(foundMurid)
         if (foundMurid) {
-            stopAndResetAudio(gagalAudioRef, gagalAudioTimeoutRef);
-
-
+            stopSemuaAudio()
 
             if (!foundMurid.sudah_lengkap) {
                 setBackgroundColor('bg-red-500');
@@ -116,7 +133,7 @@ export const ScannerMasukUjian = () => {
                 setBackgroundColor(lateStatus ? 'bg-yellow-500' : 'bg-green-300');
 
                 if (lateStatus) {
-                    terlambatAudioRef.current.play();
+                    playTerlambatAudio()
                 } else {
                     suksesAudioRef.current.play();
                 }
@@ -192,8 +209,31 @@ export const ScannerMasukUjian = () => {
         const audio_ter = new Audio(terlambatSuara);
         audio_ter.preload = 'auto'; // This will preload the audio
         terlambatAudioRef.current = audio_ter;
-
         setFoundMuridList([])
+
+
+
+        // INI MENYEBABKAN TIDAK BISA HOT RELOAD / SEMACAM CONSOLE LOG TIDAK BISA
+        // const handleBeforeUnload = (event) => {
+        //     const message = 'Are you sure you want to leave? Your data will be lost.';
+        //     event.returnValue = message; // Standard for most browsers
+        //     return message; // For some older browsers
+        // };
+        //
+        // window.addEventListener('beforeunload', handleBeforeUnload);
+        //
+        // return () => {
+        //     // Cleanup the event listener when the component is unmounted
+        //     window.removeEventListener('beforeunload', handleBeforeUnload);
+        // };
+
+
+
+        const terlambat = (localStorage.getItem('waktuTerlambat'));
+        if (terlambat) {
+        setNewDeadlineTime(terlambat);}
+        // console.log(terlambat)
+
 
     }, []);
 
@@ -233,6 +273,12 @@ export const ScannerMasukUjian = () => {
         }
     };
 
+    const handledeadlineTime = (e) => {
+        console.log(e.target.value)
+        setNewDeadlineTime(e.target.value)
+
+    }
+
 
 
 
@@ -243,24 +289,45 @@ export const ScannerMasukUjian = () => {
         <div className="bg-[#f4f4f4] min-h-screen">
             <div className="container mx-auto p-4">
 
+                {/*<Prompt when={true} message="are you sure you want to leave this page?" />*/}
 
 
-                <div className="flex gap-4 items-center">
-                    <input
-                        ref={searchBarRef}
-                        type="number"
-                        value={searchId}
-                        onChange={(e) => setSearchId(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="border border-gray-400 rounded py-3 px-5 w-full text-lg focus:border-teal-600 focus:ring-teal-600"
-                        placeholder="Cari Id_murid"
-                    />
-                    <button onClick={handleSearch} className="bg-yellow-500 hover:bg-yellow-600 text-black text-lg font-bold py-3 px-6 rounded focus:outline-none">
+                <input
+                    ref={searchBarRef}
+                    type="number"
+                    value={searchId}
+                    onChange={(e) => setSearchId(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    className="mb-2 border border-gray-400 rounded py-3 px-5 w-full text-lg focus:border-teal-600 focus:ring-teal-600"
+                    placeholder="Cari Id_murid"
+                />
+
+                <div className="flex gap-2 items-center">
+
+                    <button onClick={handleSearch} className="bg-yellow-500 hover:bg-yellow-600 text-black text-lg font-bold py-3 px-3 rounded focus:outline-none">
                         Cari
                     </button>
-                    <button onClick={handlePrevSearch} className="bg-gray-600 hover:bg-gray-700 text-white text-lg font-bold py-3 px-6 rounded focus:outline-none">
-                        ^
+                    <button onClick={handlePrevSearch} className="bg-gray-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-3 rounded focus:outline-none">
+                        <BackwardIcon className="w-5 h-7" aria-hidden="true" />
                     </button>
+
+                    <button onClick={()=>searchBarRef.current.focus()} className="bg-gray-600 hover:bg-gray-700 text-white text-lg font-bold py-3 px-4 rounded focus:outline-none">
+                        Fokus
+                    </button>
+
+                    <button onClick={() =>{
+                        setModalBatasWaktu(true)
+                    }} className="bg-gray-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-3 rounded focus:outline-none">
+                        <ClockIcon className="w-7 h-7" aria-hidden="true" />
+                    </button>
+
+                    <button onClick={fetchData} className=" bg-teal-500 hover:bg-teal-700 text-white text-md  py-3.5 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Ambil Data
+                    </button>
+
+
+
+
                 </div>
 
 
@@ -296,9 +363,7 @@ export const ScannerMasukUjian = () => {
             <div className="container mx-auto p-4">
                 <div className=" text-center">
 
-                    <button onClick={fetchData} className="bg-teal-500 hover:bg-teal-700 text-white text-md font-bold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline">
-                        Ambil Data
-                    </button>
+
                     <h1 className="ml-4 py-1.5 font-bold">Batas Waktu Terlambat: {newDeadlineTime}</h1>
 
 
@@ -319,13 +384,10 @@ export const ScannerMasukUjian = () => {
                     X
                 </button>
 
-                <button onClick={downloadCSV} className=" bg-black hover:bg-gray-900 text-white text-lg font-bold py-2 px-5 rounded focus:outline-none">
-                    Simpan
+
+                <button onClick={downloadCSV} className="bg-green-800 hover:bg-gray-700 text-white text-lg font-bold py-3 px-3 rounded focus:outline-none">
+                    <FolderArrowDownIcon className="w-7 h-7" aria-hidden="true" />
                 </button>
-
-                <ClockIcon onClick={() =>setModalBatasWaktu(true)} className=" h-11 w-11  py-1 px-1 bg-yellow-500 hover:bg-gray-900 text-white text-lg  rounded focus:outline-none">
-                </ClockIcon>
-
 
             </div>
 
@@ -349,7 +411,7 @@ export const ScannerMasukUjian = () => {
                                 <input
                                     type="time"
                                     value={newDeadlineTime}
-                                    onChange={(e) => setNewDeadlineTime(e.target.value)}
+                                    onChange={(e) => handledeadlineTime(e)}
                                     className="text-xl font-bold bg-yellow-300 rounded py-4 px-4 mb-1 mt-1"
                                 />
 
@@ -366,6 +428,8 @@ export const ScannerMasukUjian = () => {
                                 onClick={() => {
                                     setNewDeadlineTime(newDeadlineTime);
                                     setModalBatasWaktu(false);
+                                    localStorage.setItem('waktuTerlambat',newDeadlineTime);
+
                                 }}
                                 className="ml-6 bg-teal-700 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
                             >

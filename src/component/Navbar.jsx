@@ -18,7 +18,6 @@ export default function Navbar() {
 
     const handleLogout = async () => {
         await axios.post(`${baseURL}/logout`)
-        localStorage.removeItem('user');
         localStorage.clear();
         navigate('/auth');
         // Lakukan tindakan selanjutnya, misal mengarahkan ke halaman login

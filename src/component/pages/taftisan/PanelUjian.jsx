@@ -142,7 +142,7 @@ const PanelUjian = () => {
         }
 
 
-        if(isAuthorized(adminData,selectedIdKelas)){
+        if(isSuperAdmin(adminData)){
         try {
             await axios.patch(`${baseURL}/nilai/update/taftisan`, changes);
              toast.success(`Perubahan disimpan`, {
@@ -161,7 +161,7 @@ const PanelUjian = () => {
 
         setShowModaltaftisan(false);}
         else {
-            toast.error(`Anda bukan Mustahiq Kelas ini, Silahkan hubungi pengurus`, {
+            toast.error(`Hanya Penghar yang dapat mengubah Panel ini, Silahkan hubungi pengurus`, {
                 position: "top-center",
                 autoClose: 3100,
 

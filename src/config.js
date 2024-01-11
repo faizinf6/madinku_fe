@@ -1,4 +1,4 @@
 
-const baseURL = 'http://192.168.0.3:5000'; // Default IP
+const baseURL = 'http://103.127.98.123:5000';
 
 export default baseURL;

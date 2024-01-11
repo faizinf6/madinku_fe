@@ -91,7 +91,7 @@ const RekapNilai = () => {
 
         const updatedKehadiran = kehadiran[murid.id_murid] || murid.kehadiran;
 
-        if (isAuthorized(adminData,idSelectedKelas)){
+        if (isSuperAdmin(adminData)){
         try {
 
             const response = await axios.patch(`${baseURL}/murid/kehadiran/${murid.id_murid}`, {
@@ -115,7 +115,7 @@ const RekapNilai = () => {
             [murid.id_murid]: { ...updatedKehadiran }
         }));}
         else {
-            toast.error(`Anda bukan Mustahiq Kelas ini`, {autoClose: 3100,});
+            toast.error(`Hanya Pengurus yang dapat yang dapat mengubah data ini`, {autoClose: 3100,})
 
 
         }
@@ -390,8 +390,7 @@ const RekapNilai = () => {
     const handleUpdateNilaiHafalan = async (murid) => {
 
         const nilaihafalanMurid =scores[murid.id_murid]
-
-
+        if (isAuthorized(adminData,idSelectedKelas)){
         try {
 
             const response = await axios.patch(`${baseURL}/nilai/hafalan/update`, {
@@ -420,6 +419,8 @@ const RekapNilai = () => {
             console.error('Error:', error.response ? error.response.data : error.message);
             toast.error(`Gagal Menyimpan`, {autoClose: 1100,});
 
+        }}else {
+            toast.error(`Anda Bukan Mustahiq Kelas ini`, {autoClose: 3100,});
         }
 
 
