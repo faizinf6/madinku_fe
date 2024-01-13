@@ -1,8 +1,10 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import logo from "../../../logo_ppds.png";
 import baseURL from "../../../config.js";
+import warn01Image from './warn01.jpg';
+import warn02Image from './warn02.jpg';
 
 
 export const Auth = () => {
@@ -11,6 +13,11 @@ export const Auth = () => {
     const [no_hp, setno_hp] = useState('');
     const [password, setPassword] = useState('');
     const [activeTab, setActiveTab] = useState('login');
+
+    //modal state for the first time login
+    const [modalPertamx, setModalPertamax] = useState(false);
+
+
     const navigate = useNavigate();
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -28,7 +35,9 @@ export const Auth = () => {
                 setErrorMessage('no_hp/Password Salah'); // Tampilkan pesan kesalahan
             }
         } catch (error) {
-            setErrorMessage('Terjadi kesalahan pada server');
+            setErrorMessage('Terjadi kesalahan pada server, laporkan ke pengurus');
+            setModalPertamax(true)
+
         }
 
 
@@ -66,7 +75,11 @@ export const Auth = () => {
                     src= {logo}
                     alt="Madinku"
                 />
-                <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                <h1 className="mt-1 text-center text-2xl font-bold  tracking-tight text-gray-900">
+                    MADINKU PPDS
+                </h1>
+
+                <h2 className="mt-10 text-center text-l font-bold text-gray-900">
                     Silahkan masuk menggunakan Akun Anda.
                 </h2>
             </div>
@@ -118,17 +131,68 @@ export const Auth = () => {
                     <div>
 
                         <button
-                            // ref="http://192.168.0.3:3000/"
                             onClick={handleLogin}
+                            className=" w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Masuk
+                        </button>
 
-                            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            Masuk
-                        </button
-                            >
+                        <button
+                            onClick={() => {setModalPertamax(true)}}
+                            className=" mt-4 w-full justify-center rounded-md bg-gray-200 px-3 py-1.5 text-sm font-semibold leading-6 text-indigo-500 shadow-sm hover:bg-indigo-500 border border-indigo-500 ">Saya baru Pertama Kali Login
+                        </button>
+
                         {errorMessage && <div className="text-sm text-red-500">{errorMessage}</div>}
                     </div>
                 </form>
+
+
+                {modalPertamx && (
+                    <div className="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
+
+                        <div className="modal-container bg-white w-fit mx-1 rounded shadow-lg z-50 overflow-y-auto p-1" style={{maxHeight: '90vh'}}>
+                            <div className="modal-content text-left ">
+                                <div className="modal-content py-1 text-left px-1 pb-6">
+                                    <div className="bg-yellow-100 border-l-4 border-yellow-500 p-2 items-center mb-4">
+                                        <p className="text-sm font-semibold text-yellow-800">Anda Terdeteksi baru pertama kali login.</p>
+                                        <p className="text-xl font-bold text-green-700 mt-2">Anda Akan diarahkan ke halaman lain, dan akan muncul PERINGATAN. Tekan tombol "Lanjutan/Advanced".</p>
+                                        <img src={warn01Image} alt="Warning Image" className="w-fit mb-4" />
+                                        <p className="text-xl font-bold text-green-700 mt-2">lalu tekan "Tidak Aman/Terima Resiko".</p>
+                                        <img src={warn02Image} alt="Warning Image" className="w-auto" />
+                                        <p className="text-l font-semibold mt-2">Lalu tutup tab tersebut dan kembali kunjungi serta login Madinku melalui mdn.darussaadah.net</p>
+
+                                    </div>
+
+
+                                </div>
+
+                                <button
+                                    onClick={() => {setModalPertamax(false);}}
+                                    className="mt-1  bg-red-600 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
+                                >
+                                    Batal
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        // open another tab redirect to https://mdn.darussaadah.net
+                                        setModalPertamax(false)
+                                        window.open(`${baseURL}/murid`, '_blank');
+
+                                    }}
+                                    className="ml-6 mb-2 bg-teal-700 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
+                                >
+                                    Ya, Saya Mengerti
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                )}
+
+
+
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Belum punya Akun Madinku?{' '}

@@ -2,18 +2,21 @@ import Navbar from "../../Navbar.jsx";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {useNavigate } from "react-router-dom";
+import gaya from "../gaya.css";
 
 import { ClockIcon,BackwardIcon,FolderArrowDownIcon} from '@heroicons/react/24/solid'
 
-import gagalSuara from './audio/gagal_suara9.mp3';   // Adjust the import path as necessary
-import terlambatSuara from './audio/gagal_suara5.mp3';   // Adjust the import path as necessary
+import gagalSuara from './audio/gagal_suara5.mp3';   // Adjust the import path as necessary
+import terlambatSuara from './audio/gagal_suara9.mp3';   // Adjust the import path as necessary
 import suksesSuara from './audio/sukses_notif3.mp3';
-import TabelRapot from "../rekap_nilai/TabelRapot.jsx";
-import baseURL from "../../../config.js";   // Adjust the import path as necessary
+import tidakDitemukanSuara from './audio/gagal_suara6.mp3';
+
+import baseURL from "../../../config.js";
+import {toast, ToastContainer} from "react-toastify";   // Adjust the import path as necessary
 // import gagalSuara from './gagal_suara7.mp3';   // Adjust the import path as necessary
 
 export const ScannerMasukUjian = () => {
-    const [dataTaftisan, setDataTaftisan] = useState([]);
+
     const [isLoading, setIsLoading] = useState(false);
     const [searchId, setSearchId] = useState('');
     const [prevSearchId, setPrevSearchId] = useState('');
@@ -24,14 +27,18 @@ export const ScannerMasukUjian = () => {
     const gagalAudioRef = useRef(null);
     const suksesAudioRef = useRef(null);
     const terlambatAudioRef = useRef(null);
+    const tidakDitemukanAudioRef = useRef(null);
     const gagalAudioTimeoutRef = useRef(null);
 
     const [modalBatasWaktu,setModalBatasWaktu] = useState(false)
+    const [modalConfirmExit, setModalConfirmExit] = useState(false);
     const [isLate, setIsLate] = useState(false);
 
     const [newDeadlineTime, setNewDeadlineTime] = useState("21:15");
     const [foundMuridList, setFoundMuridList] = useState([]);
     const [buttonPressedTime, setButtonPressedTime] = useState('');
+
+    const wakeLockRef = useRef(null);
 
     const  navigate= useNavigate()
     const fetchData = async () => {
@@ -39,8 +46,9 @@ export const ScannerMasukUjian = () => {
         try {
             const response = await axios.get(`${baseURL}/nilai/taftisan/all`);
             localStorage.setItem('dataTaftisan', JSON.stringify(response.data));
-            setDataTaftisan(response.data);
             searchBarRef.current.focus();
+
+            toast.success('Data berhasil diambil dari server', {autoClose: 3000});
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -117,6 +125,10 @@ export const ScannerMasukUjian = () => {
 
 
     const handleSearch = () => {
+
+       try {
+
+
         const storedData = JSON.parse(localStorage.getItem('dataTaftisan'));
         const foundMurid = storedData.find(murid => murid.id_murid === searchId);
         const currentTime = new Date().toLocaleTimeString('it-IT', { hour12: false });
@@ -156,10 +168,15 @@ export const ScannerMasukUjian = () => {
 
 
         } else {
-            alert('Murid tidak ditemukan');
+            stopSemuaAudio()
+            toast.error('Murid tidak ditemukan, pastikan id murid valid', {autoClose: 6000})
+            tidakDitemukanAudioRef.current.play();
         }
         setSearchId('');
         searchBarRef.current.focus();
+} catch (error) {
+           toast.error("Apakah Anda sudah mengambil data dari server?", {autoClose: 3000});
+       }
     };
 
     const downloadCSV = () => {
@@ -182,11 +199,15 @@ export const ScannerMasukUjian = () => {
             csvContent += row + "\n";
         });
 
+        //date ddmmmyyyy for download file name
+        const date = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}).split(' ').join('');
+
+
         // Trigger CSV download
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "murid_list.csv");
+        link.setAttribute("download", `${date}_daftar_murid.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -209,11 +230,18 @@ export const ScannerMasukUjian = () => {
         const audio_ter = new Audio(terlambatSuara);
         audio_ter.preload = 'auto'; // This will preload the audio
         terlambatAudioRef.current = audio_ter;
+
+
+         const audio_nf = new Audio(tidakDitemukanSuara);
+        audio_nf.preload = 'auto'; // This will preload the audio
+        tidakDitemukanAudioRef.current = audio_nf;
+
+
         setFoundMuridList([])
 
 
 
-        // INI MENYEBABKAN TIDAK BISA HOT RELOAD / SEMACAM CONSOLE LOG TIDAK BISA
+        //// INI MENYEBABKAN TIDAK BISA HOT RELOAD / SEMACAM CONSOLE LOG TIDAK BISA
         // const handleBeforeUnload = (event) => {
         //     const message = 'Are you sure you want to leave? Your data will be lost.';
         //     event.returnValue = message; // Standard for most browsers
@@ -233,6 +261,23 @@ export const ScannerMasukUjian = () => {
         if (terlambat) {
         setNewDeadlineTime(terlambat);}
         // console.log(terlambat)
+
+
+        // jaga agar tetap HIDUP LAYARNYA !!!1
+        // if ('wakeLock' in navigator) {
+        //     // Request a screen wake lock
+        //     navigator.wakeLock.request('screen').then((lock) => {
+        //         wakeLockRef.current = lock;
+        //
+        //         // Handle lock release when the component unmounts
+        //         return () => {
+        //             if (wakeLockRef.current) {
+        //                 wakeLockRef.current.release();
+        //                 wakeLockRef.current = null;
+        //             }
+        //         };
+        //     });
+        // }
 
 
     }, []);
@@ -311,7 +356,10 @@ export const ScannerMasukUjian = () => {
                         <BackwardIcon className="w-5 h-7" aria-hidden="true" />
                     </button>
 
-                    <button onClick={()=>searchBarRef.current.focus()} className="bg-gray-600 hover:bg-gray-700 text-white text-lg font-bold py-3 px-4 rounded focus:outline-none">
+                    <button onClick={()=> {
+                        searchBarRef.current.focus()
+                        stopSemuaAudio()
+                    }} className="bg-gray-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-4 rounded focus:outline-none">
                         Fokus
                     </button>
 
@@ -329,6 +377,7 @@ export const ScannerMasukUjian = () => {
 
 
                 </div>
+                <ToastContainer/>
 
 
                 {!isLoading && (
@@ -380,7 +429,7 @@ export const ScannerMasukUjian = () => {
 
 
             <div className="flex space-x-20 justify-center pb-4">
-                <button onClick={() => navigate("/taftisan")} className=" bg-red-500 hover:bg-gray-900 text-white text-lg font-bold py-2 px-5 rounded focus:outline-none">
+                <button onClick={()=>setModalConfirmExit(true)} className=" bg-red-500 hover:bg-gray-900 text-white text-lg font-bold py-2 px-5 rounded focus:outline-none">
                     X
                 </button>
 
@@ -412,7 +461,7 @@ export const ScannerMasukUjian = () => {
                                     type="time"
                                     value={newDeadlineTime}
                                     onChange={(e) => handledeadlineTime(e)}
-                                    className="text-xl font-bold bg-yellow-300 rounded py-4 px-4 mb-1 mt-1"
+                                    className="text-xl font-bold bg-yellow-300 rounded py-4 px-4 mb-1 mt-1 custom-time-input"
                                 />
 
                             </div>
@@ -421,7 +470,7 @@ export const ScannerMasukUjian = () => {
                                 onClick={() => {setModalBatasWaktu(false)}}
                                 className="mt-1  bg-red-600 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
                             >
-                                Tutup
+                                Batal
                             </button>
 
                             <button
@@ -434,6 +483,45 @@ export const ScannerMasukUjian = () => {
                                 className="ml-6 bg-teal-700 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
                             >
                                 Simpan
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            )}
+
+
+
+            {modalConfirmExit && (
+                <div className="modal fixed w-full h-full top-0 left-0 flex items-center justify-center">
+
+                    <div className="modal-container bg-white w-fit mx-1 rounded shadow-lg z-50 overflow-y-auto p-4" style={{maxHeight: '90vh'}}>
+                        <div className="modal-content text-left ">
+                            <div className="modal-content py-1 text-left px-1 pb-6">
+                                <div className="flex justify-between items-center pb-3">
+                                    <p className="text-2xl font-bold">Konfirmasi Keluar, apakah anda yakin?</p>
+                                </div>
+
+                            </div>
+
+                            <button
+                                onClick={() => {navigate('/taftisan'); setModalConfirmExit(false)}}
+                                className="mt-1  bg-red-600 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
+                            >
+                                Yakin
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    setModalConfirmExit(false);
+
+                                }}
+                                className="ml-6 bg-teal-700 text-white text-lg font-semibold px-5 py-1.5  rounded hover:bg-gray-700"
+                            >
+                                Batal
                             </button>
 
                         </div>

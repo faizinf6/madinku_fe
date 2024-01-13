@@ -839,8 +839,10 @@ const RekapNilai = () => {
                                 {/* Modal header, close button, and table */}
 
                                 <div className="modal-content py-4 text-left">
+                                    <p className="text-2xl font-bold">Rekap Kehadiran</p>
+
                                     <div className="flex justify-between items-center pb-3">
-                                        <p className="text-2xl font-bold">Rekap Kehadiran</p>
+                                        <p className="text-2xl font-bold text-red-600">Segera Lapor bila data tak sesuai</p>
                                         <button onClick={() => {
 
                                             setshowKehadiranModal(false)
