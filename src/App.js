@@ -13,7 +13,7 @@ import {ProfilUser} from "./component/pages/ProfilUser.jsx";
 import {ListMustahiq} from "./component/pages/informasi/list_mustahiq/ListMustahiq.jsx";
 import {MuridBoyongPage} from "./component/pages/data_murid/MuridBoyongPage.jsx";
 import {ScannerMasukUjian} from "./component/pages/taftisan/ScannerMasukUjian.jsx";
-import {UjianQrPage} from "./component/pages/taftisan/UjianQrPage.jsx"; // Import komponen baru
+import {QRGenerator} from "./component/pages/taftisan/QRGenerator.jsx"; // Import komponen baru
 
 function App() {
     return (
@@ -31,7 +31,7 @@ function App() {
                     <Route path="/list-mustahiq" element={< ListMustahiq/>} />
                     <Route path="/murid-boyong" element={< MuridBoyongPage/>} />
                     <Route path="/masuk-ujian" element={< ScannerMasukUjian/>} />
-                    <Route path="/buat-qr" element={< UjianQrPage/>} />
+                    <Route path="/buat-qr" element={< QRGenerator/>} />
                 </Routes>
             </BrowserRouter>
         </div>

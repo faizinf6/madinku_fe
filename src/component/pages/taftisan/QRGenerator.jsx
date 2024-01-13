@@ -1,4 +1,4 @@
-// UjianQrPage.jsx
+// QRGenerator.jsx
 import React, {useRef, useState} from 'react';
 import ReactDOM from 'react-dom';
 import { jsPDF } from 'jspdf';
@@ -7,8 +7,9 @@ import Navbar from "../../Navbar.jsx";
 import QRCard from './QRCard';
 import axios from "axios";
 import baseURL from "../../../config.js";
+import {toast, ToastContainer} from "react-toastify";
 
-export const UjianQrPage = () => {
+export const QRGenerator = () => {
     const [idMuridInput, setIdMuridInput] = useState(''); // For storing the input
 
     const [isLoadingQr, setIsLoadingQr] = useState(false);
@@ -20,9 +21,18 @@ export const UjianQrPage = () => {
 
         if (murid) {
             const qrCardElement = document.createElement('div');
+
             qrCardElement.style.width = `${50 * 3.7795275591}px`;
             qrCardElement.style.height = `${80 * 3.7795275591}px`;
+
+
+
             document.body.appendChild(qrCardElement);
+
+            // qrCardElement.style.width = `${50 * 3.7795275591}px`;
+            // qrCardElement.style.height = `${80 * 3.7795275591}px`;
+
+
 
             ReactDOM.render(<QRCard idMurid={murid.id_murid} namaMurid={murid.nama_murid} kelas_murid={murid.nama_kelas} marginLeft={0}  />, qrCardElement);
 
@@ -30,7 +40,7 @@ export const UjianQrPage = () => {
             await new Promise((resolve) => setTimeout(resolve, 500));
 
             const canvas = await html2canvas(qrCardElement, {
-                scale: 2,
+                scale: 4,
                 logging: true,
                 useCORS: true
             });
@@ -46,7 +56,8 @@ export const UjianQrPage = () => {
             qrCardElement.parentNode.removeChild(qrCardElement);
             setIsLoadingQr(false);
         } else {
-            alert('Murid Tidak Ditemukan');
+            toast.error('Murid Tidak Ditemukan, Pastikan id_murid Valid');
+            toast.warning("Apakah anda sudah mengambil data dari server?");
             setIsLoadingQr(false);
         }
     };
@@ -54,6 +65,7 @@ export const UjianQrPage = () => {
     const handleGeneratePdf = async () => {
         setIsLoadingQr(true)
         const dataMurid = JSON.parse(localStorage.getItem('dataTaftisan') || '[]');
+        if (dataMurid) {
         const cardsPerRow = 4;
         const rowsPerPage = 4; // 16 cards per F4 page
         const cardsPerPage = cardsPerRow * rowsPerPage;
@@ -113,75 +125,20 @@ export const UjianQrPage = () => {
 
             pdf.save(`qr-cards-part${segment + 1}.pdf`);
         }
+
+
+        } else {
+            toast.error('Murid Tidak Ditemukan, Pastikan id_murid Valid');
+            toast.warning("Apakah anda sudah mengambil data dari server?");
+        }
         setIsLoadingQr(false)
+
+
     };
 
 
-    // const handleGeneratePdf = async () => {
-    //     setIsLoadingQr(true)
-    //     const dataMurid = JSON.parse(localStorage.getItem('dataTaftisan') || '[]');
-    //     const cardsPerRow = 4;
-    //     const rowsPerPage = 4; // Since you want 16 cards per F4 page
-    //     const cardsPerPage = cardsPerRow * rowsPerPage;
-    //     const cardWidthMM = 50;
-    //     const cardHeightMM = 80;
-    //     const mmToPx = 3.7795275591; // Conversion factor from mm to pixels
-    //
-    //     let canvases = [];
-    //     for (let page = 0; page < Math.ceil(dataMurid.length / cardsPerPage); page++) {
-    //         const pageContainer = document.createElement('div');
-    //         pageContainer.className = 'flex flex-wrap'; // Use flexbox for automatic wrapping
-    //         pageContainer.style.width = `${210 * mmToPx}px`;
-    //         pageContainer.style.height = `${330 * mmToPx}px`;
-    //         document.body.appendChild(pageContainer);
-    //
-    //         for (let i = 0; i < cardsPerPage; i++) {
-    //             const muridIndex = page * cardsPerPage + i;
-    //             if (muridIndex < dataMurid.length) {
-    //                 const murid = dataMurid[muridIndex];
-    //                 const qrCardElement = document.createElement('div');
-    //                 qrCardElement.className = 'flex'; // Flex to center the QRCard
-    //                 qrCardElement.style.width = `${cardWidthMM * mmToPx}px`;
-    //                 qrCardElement.style.height = `${cardHeightMM * mmToPx}px`;
-    //                 ReactDOM.render(<QRCard  idMurid={murid.id_murid} namaMurid={murid.nama_murid} kelas_murid={murid.nama_kelas} />, qrCardElement);
-    //                 pageContainer.appendChild(qrCardElement);
-    //             }
-    //         }
-    //
-    //         // Wait for all components to finish rendering
-    //         await new Promise((resolve) => setTimeout(resolve, 1000));
-    //
-    //         const canvas = await html2canvas(pageContainer, {
-    //             scale: 2,
-    //             logging: true,
-    //             useCORS: true,
-    //             width: pageContainer.offsetWidth,
-    //             height: pageContainer.offsetHeight
-    //         });
-    //
-    //         canvases.push(canvas);
-    //
-    //         ReactDOM.unmountComponentAtNode(pageContainer);
-    //         pageContainer.parentNode.removeChild(pageContainer);
-    //     }
-    //
-    //     const pdf = new jsPDF({
-    //         orientation: 'p',
-    //         unit: 'mm',
-    //         format: [210, 330] // F4 size in portrait orientation
-    //     });
-    //
-    //     canvases.forEach((canvas, index) => {
-    //         if (index > 0) {
-    //             pdf.addPage([210, 330]);
-    //         }
-    //         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 330);
-    //     });
-    //
-    //     pdf.save('qr-cards.pdf');
-    //     setIsLoadingQr(false)
-    // };
-    const [dataTaftisan, setDataTaftisan] = useState([]);
+
+
     const [isLoading, setIsLoading] = useState(false);
     const searchBarRef = useRef(null);
     const [buttonPressedTime, setButtonPressedTime] = useState('');
@@ -191,7 +148,7 @@ export const UjianQrPage = () => {
         try {
             const response = await axios.get(`${baseURL}/nilai/taftisan/all`);
             localStorage.setItem('dataTaftisan', JSON.stringify(response.data));
-            setDataTaftisan(response.data);
+
 
 
         } catch (error) {
@@ -221,6 +178,7 @@ export const UjianQrPage = () => {
     return (
         <div>
             <Navbar/>
+            <ToastContainer/>
             <div className=" container mx-auto  p-4">
 
                 <div className="flex">
@@ -284,4 +242,4 @@ export const UjianQrPage = () => {
     );
 };
 
-export default UjianQrPage;
+export default QRGenerator;

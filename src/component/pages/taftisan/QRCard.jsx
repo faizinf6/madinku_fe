@@ -8,7 +8,7 @@ const QRCard = ({ idMurid, namaMurid,kelas_murid,marginLeft }) => {
     return (
         <div className={`flex flex-col items-center justify-center w-[50mm] h-[80mm] bg-white border border-black ml-${marginLeft}`}>
             <p className="mb-4">No Ujian: {last3Digits}</p>
-            <QRCode value={idMurid} size={parseInt(40 / 0.264583)} level="Q" />
+            <QRCode value={idMurid} size={parseInt(40 / 0.264583)} level="H" />
             <div className="text-center mt-2">
                 <p>{idMurid}</p>
                 <p>{namaMurid}</p>

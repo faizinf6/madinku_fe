@@ -26,13 +26,13 @@ const RekapNilai = () => {
     const [adminData, setAdminData] = useState({});
     const [kelasData, setKelasData] = useState([]);
     const [idSelectedKelas, setIdSelectedKelas] = useState(0);
-    const [muridData, setMuridData] = useState([]);
-    const [activeMurid, setActiveMurid] = useState(null);
+    // const [muridData, setMuridData] = useState([]);
+    // const [activeMurid, setActiveMurid] = useState(null);
     const [showModalMuridMapel, setShowModalMuridMapel] = useState(false);
     const [selectedGender, setSelectedGender] = useState('');
     const [editedScores, setEditedScores] = useState({});
 
-    const [showTambahModal, setShowTambahModal] = useState(false);
+    // const [showTambahModal, setShowTambahModal] = useState(false);
 
 
     //modal nilai muhafadzoh
@@ -435,29 +435,29 @@ const RekapNilai = () => {
 
 
 
-    const handleCloseModal = () => {
-        setShowModalMuridMapel(false);
-    };
+    // const handleCloseModal = () => {
+    //     setShowModalMuridMapel(false);
+    // };
+    //
+    // const handleSaveModal = () => {
+    //     handleLoadMapel();
+    //     // Logika setelah menyimpan data
+    //     setShowModalMuridMapel(false);
+    // };
 
-    const handleSaveModal = () => {
-        handleLoadMapel();
-        // Logika setelah menyimpan data
-        setShowModalMuridMapel(false);
-    };
+    // const handleTambahMurid = () => {
+    //     setShowTambahModal(true);
+    // };
+    //
+    // const handleCloseTambahModal = () => {
+    //
+    //     setShowTambahModal(false);
+    // };
 
-    const handleTambahMurid = () => {
-        setShowTambahModal(true);
-    };
-
-    const handleCloseTambahModal = () => {
-
-        setShowTambahModal(false);
-    };
-
-    const handleSaveTambahModal = () => {
-        handleLoadMapel(); // Refresh data murid
-        setShowTambahModal(false);
-    };
+    // const handleSaveTambahModal = () => {
+    //     handleLoadMapel(); // Refresh data murid
+    //     setShowTambahModal(false);
+    // };
 
     const closeModal = () => {
         setShowModalMuridMapel(false);
