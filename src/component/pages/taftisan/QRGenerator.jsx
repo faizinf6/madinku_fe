@@ -226,13 +226,14 @@ export const QRGenerator = () => {
 
 
             </div>
+            {/*<hr className="w-auto border-t border-black" /> /!* Horizontal line *!/*/}
 
             <div className="flex flex-col w-[100mm] h-[60mm] bg-white border border-black ml-0">
                 <div className="flex items-center">
                     <div className="ml-2 mt-1 flex items-center">
                         <img src={logo} alt="Logo PPDS" className="w-10 h-18 mr-4" />
                         <div>
-                            <p className="text-lg font-bold ">Madrasah Diniyah</p>
+                            <p className="text-lg font-bold">Madrasah Diniyah</p>
                             <p className="text-xs font-semibold">Pondok Pesantren Darussaadah</p>
                         </div>
                     </div>
@@ -241,19 +242,32 @@ export const QRGenerator = () => {
                         <p className="text-l font-bold">003</p>
                     </div>
                 </div>
-                {/*<hr className="w-auto border-t border-black" /> /!* Horizontal line *!/*/}
 
-                <div className="flex items-center justify-center">
-                    <div className="ml-4 text-left mr-5">
-                        <p className=" text-xs italic">Kartu Ujian Semester Akhir</p>
-                        <p className="text-sm">ID Murid: {"idMurid"}</p>
-                        <p className="text-sm">Nama Murid: {"nama46544654645Murid"}</p>
-                        <p className="text-sm">Kelas Murid: {"kelas_murid"}</p>
-                        <p className="text-sm">Tahun Ajaran {"kelas_murid"}</p>
-                    </div>
+                <div className=" mt-2 flex ml-2">
                     <QRCode value={"idMurid"} size={parseInt(40 / 0.264583)} level="H" />
+
+                    <div className="text-center ml-2 w-[70mm]">
+
+                        <div className=" px-1.5  text-center  mr-3 border border-gray-700 rounded">
+                            <p className="text-l font-bold">{"Kelas"}</p>
+                        </div>
+                        <div className="mt-1 px-1.5  text-center  mr-3 border border-gray-700 rounded">
+                            <p className="text-xs">Nama</p>
+                            <p className="text-l font-bold pb-1">{"ini yadsgsdgsdgsdgsdgng"}</p>
+                        </div>
+                        <div className="mt-1 px-1.5  text-center  mr-3 border border-gray-700 rounded">
+                            <p className="text-l font-bold">ID: {"ini id"}</p>
+                        </div>
+
+
+                    </div>
+
                 </div>
+                <p className="ml-5  italic" style={{ fontSize: '0.6rem' }}>Semester Akhir 1444-1445</p>
+
+
             </div>
+
 
 
 
