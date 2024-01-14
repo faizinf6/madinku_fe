@@ -8,6 +8,8 @@ import QRCard from './QRCard';
 import axios from "axios";
 import baseURL from "../../../config.js";
 import {toast, ToastContainer} from "react-toastify";
+import QRCode from "qrcode.react";
+import logo from "../../../logo_ppds.png";
 
 export const QRGenerator = () => {
     const [idMuridInput, setIdMuridInput] = useState(''); // For storing the input
@@ -40,7 +42,7 @@ export const QRGenerator = () => {
             await new Promise((resolve) => setTimeout(resolve, 500));
 
             const canvas = await html2canvas(qrCardElement, {
-                scale: 4,
+                scale: 1,
                 logging: true,
                 useCORS: true
             });
@@ -66,11 +68,11 @@ export const QRGenerator = () => {
         setIsLoadingQr(true)
         const dataMurid = JSON.parse(localStorage.getItem('dataTaftisan') || '[]');
         if (dataMurid) {
-        const cardsPerRow = 4;
-        const rowsPerPage = 4; // 16 cards per F4 page
+        const cardsPerRow = 2;
+        const rowsPerPage = 5; // 16 cards per F4 page
         const cardsPerPage = cardsPerRow * rowsPerPage;
         const mmToPx = 3.7795275591; // Conversion factor from mm to pixels
-        const segmentSize = 160; // Jumlah data per segmen
+        const segmentSize = 100; // Jumlah data per segmen
 
         for (let segment = 0; segment < Math.ceil(dataMurid.length / segmentSize); segment++) {
             let canvases = [];
@@ -87,8 +89,8 @@ export const QRGenerator = () => {
                         const murid = dataMurid[muridIndex];
                         const qrCardElement = document.createElement('div');
                         qrCardElement.className = 'flex';
-                        qrCardElement.style.width = `${50 * mmToPx}px`;
-                        qrCardElement.style.height = `${80 * mmToPx}px`;
+                        qrCardElement.style.width = `${100 * mmToPx}px`;
+                        qrCardElement.style.height = `${60 * mmToPx}px`;
                         ReactDOM.render(<QRCard idMurid={murid.id_murid} namaMurid={murid.nama_murid} kelas_murid={murid.nama_kelas} marginLeft={1} />, qrCardElement);
                         pageContainer.appendChild(qrCardElement);
                     }
@@ -224,6 +226,41 @@ export const QRGenerator = () => {
 
 
             </div>
+
+            <div className="flex flex-col w-[100mm] h-[60mm] bg-white border border-black ml-0">
+                <div className="flex items-center">
+                    <div className="ml-2 mt-1 flex items-center">
+                        <img src={logo} alt="Logo PPDS" className="w-10 h-18 mr-4" />
+                        <div>
+                            <p className="text-lg font-bold ">Madrasah Diniyah</p>
+                            <p className="text-xs font-semibold">Pondok Pesantren Darussaadah</p>
+                        </div>
+                    </div>
+                    <div className="text-center ml-4 mr-3 border border-gray-700 rounded">
+                        <p className="px-1.5 text-xs">No Ujian</p>
+                        <p className="text-l font-bold">003</p>
+                    </div>
+                </div>
+                {/*<hr className="w-auto border-t border-black" /> /!* Horizontal line *!/*/}
+
+                <div className="flex items-center justify-center">
+                    <div className="ml-4 text-left mr-5">
+                        <p className=" text-xs italic">Kartu Ujian Semester Akhir</p>
+                        <p className="text-sm">ID Murid: {"idMurid"}</p>
+                        <p className="text-sm">Nama Murid: {"nama46544654645Murid"}</p>
+                        <p className="text-sm">Kelas Murid: {"kelas_murid"}</p>
+                        <p className="text-sm">Tahun Ajaran {"kelas_murid"}</p>
+                    </div>
+                    <QRCode value={"idMurid"} size={parseInt(40 / 0.264583)} level="H" />
+                </div>
+            </div>
+
+
+
+
+
+
+
 
             {isLoadingQr &&
                 <div className="flex justify-center">
