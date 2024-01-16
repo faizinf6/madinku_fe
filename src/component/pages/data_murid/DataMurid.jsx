@@ -5,7 +5,7 @@ import axios from 'axios';
 import ButtonGroup from "./ButtonGroup.jsx";
 import EditModalPermurid from "./EditModalPermurid.jsx";
 import TambahMuridModal from "./TambahMuridModal.jsx";
-import { UserPlusIcon,ArchiveBoxIcon} from '@heroicons/react/24/solid'
+import {UserPlusIcon, ArchiveBoxIcon, ArrowPathIcon} from '@heroicons/react/24/solid'
 import {useNavigate} from "react-router-dom";
 import baseURL from "../../../config.js";
 
@@ -13,7 +13,7 @@ import baseURL from "../../../config.js";
 const DataMurid = () => {
     const [adminData, setAdminData] = useState({});
     const [kelasData, setKelasData] = useState([]);
-    const [selectedIdKelasKelas, setSelectedIdKelasKelas] = useState('');
+    const [idSelectedKelas, setIdSelectedKelas] = useState('');
     const [muridData, setMuridData] = useState([]);
     const [activeMurid, setActiveMurid] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -58,18 +58,18 @@ const DataMurid = () => {
 
 
     const handleLoadMurid = async () => {
-        if (selectedIdKelasKelas) {
-            // console.log(selectedIdKelasKelas)
+        if (idSelectedKelas) {
+            // console.log(idSelectedKelas)
             try {
-                const response = await axios.get(`${baseURL}/kelas/murid/all/${selectedIdKelasKelas}`);
+                const response = await axios.get(`${baseURL}/kelas/murid/all/${idSelectedKelas}`);
                 console.log(response.data)
                 setMuridData(response.data);
 
             } catch (error) {
                 console.error('Terjadi kesalahan saat memuat data murid:', error);
             }
-            const matchingAdmin =  dataAdmin.find(admin => admin.id_kelas === parseInt(selectedIdKelasKelas));
-            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${selectedIdKelasKelas} `);
+            const matchingAdmin =  dataAdmin.find(admin => admin.id_kelas === parseInt(idSelectedKelas));
+            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${idSelectedKelas} `);
 
 
 
@@ -95,7 +95,7 @@ const DataMurid = () => {
     };
 
     const handleCloseTambahModal = () => {
-        // console.log(selectedIdKelasKelas)
+        // console.log(idSelectedKelas)
         setShowTambahModal(false);
     };
 
@@ -112,13 +112,17 @@ const DataMurid = () => {
                 <ButtonGroup onChange={(gender) => setSelectedGender(gender)} />
             </div>
 
-            <div className="mb-1 mt-1 ">
-
+            <div className="mb-1 mt-3 flex items-center">
+                <ArrowPathIcon
+                    className="mr-3 p-1 h-10 w-9 bg-blue-500 border border-blue-500 rounded"
+                    aria-hidden="true"
+                    color="white"
+                    onClick={() => window.open(`${baseURL}/murid`, '_blank')}
+                />
                 <select
-                    className="mt-5 p-2 border border-gray-300 rounded"
-                    onChange={(e) => setSelectedIdKelasKelas(e.target.value)}
-                    value={selectedIdKelasKelas}
-                >
+                    className=" p-2 border border-gray-300 rounded"
+                    onChange={(e) => setIdSelectedKelas(e.target.value)}
+                    value={idSelectedKelas}>
                     <option value="">Pilih Kelas</option>
                     {kelasData.filter(kelas => kelas.gender.includes(selectedGender)).map(kelas => (
                         <option key={kelas.id_kelas} value={kelas.id_kelas}>
@@ -128,10 +132,10 @@ const DataMurid = () => {
                 </select>
                 <button
                     className="ml-2 px-4 py-1.5 bg-blue-500 text-white rounded"
-                    onClick={handleLoadMurid}
-                >
+                    onClick={handleLoadMurid}>
                     Proses
                 </button>
+
             </div>
             <p className="mb-3 text-blue-500 text-xs font-bold"> {dispidKelas}</p>
 
@@ -141,9 +145,9 @@ const DataMurid = () => {
             </div>
 
 
-            {showTambahModal && selectedIdKelasKelas&&(
+            {showTambahModal && idSelectedKelas&&(
                 <TambahMuridModal
-                    kelasTerpilih={selectedIdKelasKelas}
+                    kelasTerpilih={idSelectedKelas}
                     kelasdata={kelasData}
                     onClose={handleCloseTambahModal}
                     onSave={handleSaveTambahModal}
@@ -193,7 +197,7 @@ const DataMurid = () => {
                 <EditModalPermurid
                     dataMuridDipilih={activeMurid}
                     listOfKelas={kelasData}
-                    apakahSama={isAuthorized(adminData,parseInt(selectedIdKelasKelas))}
+                    apakahSama={isAuthorized(adminData,parseInt(idSelectedKelas))}
                     onClose={handleCloseModal}
                     onSave={handleSaveModal}
                 />
@@ -210,7 +214,7 @@ const DataMurid = () => {
         }
 
         // Jika bukan super_admin, bandingkan id_kelas
-        return admin.id_kelas === parseInt(selectedIdKelasKelas);
+        return admin.id_kelas === parseInt(idSelectedKelas);
     }
 
 };

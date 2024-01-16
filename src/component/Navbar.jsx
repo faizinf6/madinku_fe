@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon,UserCircleIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, XMarkIcon,UserCircleIcon } from '@heroicons/react/24/outline'
 import logo from '../logo_ppds.png'
 import axios from "axios";
 import {useLocation, useNavigate,Link } from "react-router-dom";
@@ -147,15 +147,3 @@ function NavigationLink({ route, name, currentPath }) {
         </Link>
     );
 }
-{/*{navigation.map((item) => (*/}
-{/*    <button*/}
-{/*        key={item.name}*/}
-{/*        onClick={() => handleNavigation(item.route)}*/}
-{/*        className={classNames(*/}
-{/*            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',*/}
-{/*            'rounded-md px-3 py-2 text-sm font-medium'*/}
-{/*        )}*/}
-{/*    >*/}
-{/*        {item.name}*/}
-{/*    </button>*/}
-{/*))}*/}

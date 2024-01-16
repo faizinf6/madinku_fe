@@ -1,13 +1,13 @@
 
 import '../../App.css';
 import Navbar from "../Navbar.jsx";
-import { PencilSquareIcon,TableCellsIcon,PresentationChartBarIcon,ClipboardDocumentListIcon,UserGroupIcon,ClipboardDocumentCheckIcon} from '@heroicons/react/24/solid'
-import {BrowserRouter, Routes, Route, useNavigate} from "react-router-dom";
-import DataMurid from "./data_murid/DataMurid.jsx";
+import { TableCellsIcon,PresentationChartBarIcon,ClipboardDocumentListIcon,UserGroupIcon,ClipboardDocumentCheckIcon} from '@heroicons/react/24/solid'
+import {useNavigate} from "react-router-dom";
+
 import {useEffect, useState} from "react";
 import './gaya.css'
 import Wave from 'react-wavify';
-import baseURL from "../../config.js";
+
 function App() {
     const [admin, setAdmin] = useState({});
     const navigate = useNavigate();

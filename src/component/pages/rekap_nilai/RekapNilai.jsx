@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import TabelRapot from "./TabelRapot.jsx";
 import '../gaya.css'
 import baseURL from "../../../config.js";
+import {ArrowPathIcon} from "@heroicons/react/24/solid/index.js";
 
 
 //RekapNilai
@@ -474,13 +475,17 @@ const RekapNilai = () => {
                     <ButtonGroup onChange={(gender) => setSelectedGender(gender)}/>
                 </div>
 
-                <div className="mb-4 mt-1 ">
-
+                <div className="mb-1 mt-3 flex items-center">
+                    <ArrowPathIcon
+                        className="mr-3 p-1 h-10 w-9 bg-blue-500 border border-blue-500 rounded"
+                        aria-hidden="true"
+                        color="white"
+                        onClick={() => window.open(`${baseURL}/murid`, '_blank')}
+                    />
                     <select
-                        className="mt-5 p-2 border border-gray-300 rounded"
+                        className=" p-2 border border-gray-300 rounded"
                         onChange={(e) => setIdSelectedKelas(e.target.value)}
-                        value={idSelectedKelas}
-                    >
+                        value={idSelectedKelas}>
                         <option value="">Pilih Kelas</option>
                         {kelasData.filter(kelas => kelas.gender.includes(selectedGender)).map(kelas => (
                             <option key={kelas.id_kelas} value={kelas.id_kelas}>
@@ -493,6 +498,7 @@ const RekapNilai = () => {
                         onClick={handleLoadMapel}>
                         Proses
                     </button>
+
                 </div>
 
                 <div className="p-2 ">

@@ -3,25 +3,25 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ButtonGroup from "../data_murid/ButtonGroup.jsx";
-import EditModalPermurid from "../data_murid/EditModalPermurid.jsx";
-import TambahMuridModal from "../data_murid/TambahMuridModal.jsx";
-import { PencilSquareIcon,UserPlusIcon,ArchiveBoxIcon} from '@heroicons/react/24/solid'
+
 import {useNavigate} from "react-router-dom";
 import Navbar from "../../Navbar.jsx";
 
 import {toast, ToastContainer} from "react-toastify";
 import baseURL from "../../../config.js";
+import {ArrowPathIcon} from "@heroicons/react/24/solid/index.js";
 //RekapNilai
 const PanelUjian = () => {
     const [adminData, setAdminData] = useState({});
     const [kelasData, setKelasData] = useState([]);
-    const [selectedIdKelas, setSelectedIdKelas] = useState('');
+    const [idSelectedKelas, setIdSelectedKelas] = useState('');
     const [dataTaftisanMurid, setDataTaftisanMurid] = useState([]);
     const [dataTaftisanDipilih, setDataTaftisanDipilih] = useState(null);
     const [showModaltaftisan, setShowModaltaftisan] = useState(false);
     const [selectedGender, setSelectedGender] = useState('');
     const [dataAllAdmin, setDataAllAdmin] = useState([]);
     const [dispidKelas, setdispidKelas] = useState('');
+    const [selectedMurid, setSelectedMurid] = useState('');
 
 
     const fetchData = async () => {
@@ -53,11 +53,11 @@ const PanelUjian = () => {
     }, []);
 
     const handleLoadMurid = async () => {
-        if (selectedIdKelas) {
-            // console.log(selectedIdKelas)
+        if (idSelectedKelas) {
+            // console.log(idSelectedKelas)
 
             try {
-                const response = await axios.get(`${baseURL}/nilai/taftisan?id_kelas=${selectedIdKelas}`);
+                const response = await axios.get(`${baseURL}/nilai/taftisan?id_kelas=${idSelectedKelas}`);
                 // console.log(response.data)
                 setDataTaftisanMurid(response.data);
 
@@ -65,8 +65,8 @@ const PanelUjian = () => {
                 console.error('Terjadi kesalahan saat memuat data murid:', error);
             }
 
-            const matchingAdmin =  dataAllAdmin.find(admin => admin.id_kelas === parseInt(selectedIdKelas));
-            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${selectedIdKelas} `);
+            const matchingAdmin =  dataAllAdmin.find(admin => admin.id_kelas === parseInt(idSelectedKelas));
+            setdispidKelas(`Mustahiq: ${matchingAdmin.nama_admin}, id_kelas: ${idSelectedKelas} `);
 
         }
     };
@@ -74,6 +74,7 @@ const PanelUjian = () => {
     const handleShowStatusTaftisan = (murid) => {
         setDataTaftisanDipilih(murid.data_taftisan);
         setCurrentDataDipilih(murid.data_taftisan)
+        setSelectedMurid(murid.data_taftisan[0].nama_murid)
         // setCurrentData(murid.data_taftisan);
          setShowModaltaftisan(true);
 
@@ -184,12 +185,17 @@ const PanelUjian = () => {
                     <ButtonGroup onChange={(gender) => setSelectedGender(gender)} />
                 </div>
 
-                <div className="mb-1 mt-1 ">
+                <div className="mb-1 mt-3 flex items-center">
+                    <ArrowPathIcon
+                        className="mr-3 p-1 h-10 w-9 bg-blue-500 border border-blue-500 rounded"
+                        aria-hidden="true"
+                        color="white"
+                        onClick={() => window.open(`${baseURL}/murid`, '_blank')}
+                    />
                     <select
-                        className="mt-5 p-2 border border-gray-300 rounded"
-                        onChange={(e) => setSelectedIdKelas(e.target.value)}
-                        value={selectedIdKelas}
-                    >
+                        className=" p-2 border border-gray-300 rounded"
+                        onChange={(e) => setIdSelectedKelas(e.target.value)}
+                        value={idSelectedKelas}>
                         <option value="">Pilih Kelas</option>
                         {kelasData.filter(kelas => kelas.gender.includes(selectedGender)).map(kelas => (
                             <option key={kelas.id_kelas} value={kelas.id_kelas}>
@@ -199,10 +205,10 @@ const PanelUjian = () => {
                     </select>
                     <button
                         className="ml-2 px-4 py-1.5 bg-blue-500 text-white rounded"
-                        onClick={handleLoadMurid}
-                    >
+                        onClick={handleLoadMurid}>
                         Proses
                     </button>
+
                 </div>
                 <p className="mb-3 text-blue-500 text-xs font-bold"> {dispidKelas}</p>
 
@@ -283,7 +289,7 @@ const PanelUjian = () => {
                                     {/* Modal header, close button, and table */}
                                     <div className="modal-content py-1 text-left px-1 pb-6">
                                         <div className="flex justify-between items-center pb-3">
-                                            <p className="text-2xl font-bold">Data Taftisan {dataTaftisanMurid[0]?.nama_murid}</p>
+                                            <p className="text-2xl font-bold">Data Kitab {selectedMurid}</p>
 
                                         </div>
 

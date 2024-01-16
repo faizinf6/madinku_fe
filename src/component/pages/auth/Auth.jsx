@@ -175,7 +175,6 @@ export const Auth = () => {
 
                                 <button
                                     onClick={() => {
-                                        // open another tab redirect to https://mdn.darussaadah.net
                                         setModalPertamax(false)
                                         window.open(`${baseURL}/murid`, '_blank');
 

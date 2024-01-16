@@ -23,8 +23,7 @@ const QRCard = ({ idMurid, namaMurid,kelas_murid,marginLeft }) => {
             </div>
 
             <div className=" mt-2 flex ml-2">
-                <QRCode value={"idMurid"} size={parseInt(40 / 0.264583)} level="H" />
-
+                <QRCode value={idMurid} size={parseInt(40 / 0.264583)} level="H" />
                 <div className="text-center ml-2 w-[70mm]">
 
                     <div className=" px-1.5  text-center  mr-3 border border-gray-700 rounded">
@@ -37,13 +36,11 @@ const QRCard = ({ idMurid, namaMurid,kelas_murid,marginLeft }) => {
                     <div className="mt-1 px-1.5  text-center  mr-3 border border-gray-700 rounded">
                         <p className="text-l font-bold">ID: {idMurid}</p>
                     </div>
-
-
+                    <p className="mt-1 italic text-xs">Semester Akhir 1444-1445 H</p>
                 </div>
 
             </div>
-            <p className="ml-5  italic" style={{ fontSize: '0.6rem' }}>Semester Akhir 1444-1445</p>
-
+            {/*<p className="ml-5  italic" style={{ fontSize: '0.6rem' }}>Semester Akhir 1444-1445</p>*/}
 
         </div>
     );
