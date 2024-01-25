@@ -38,7 +38,7 @@ const PanelUjian = () => {
             setAdminData(user);
         }
 
-        console.log(user)
+        // console.log(user)
         const fetchAdminData = async () => {
             try {
                 const responseAdmin = await axios.get(`${baseURL}/admin/all`);

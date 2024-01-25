@@ -29,12 +29,14 @@ export const ScannerMasukUjian = () => {
     const terlambatAudioRef = useRef(null);
     const tidakDitemukanAudioRef = useRef(null);
     const gagalAudioTimeoutRef = useRef(null);
+    const terlambatAudioTimeoutRef = useRef(null);
 
     const [modalBatasWaktu,setModalBatasWaktu] = useState(false)
     const [modalConfirmExit, setModalConfirmExit] = useState(false);
-    const [isLate, setIsLate] = useState(false);
+    const [isUjianDitutup, setIsUjianDiTutup] = useState(false);
 
     const [newDeadlineTime, setNewDeadlineTime] = useState("21:15");
+    const [batasWaktuTutup, setbatasWaktuTutup] = useState("21:45");
     const [foundMuridList, setFoundMuridList] = useState([]);
     const [buttonPressedTime, setButtonPressedTime] = useState('');
 
@@ -95,29 +97,34 @@ export const ScannerMasukUjian = () => {
     };
 
     const stopSemuaAudio = () => {
-        gagalAudioRef.current.pause();
-        gagalAudioRef.current.currentTime = 0;
-        terlambatAudioRef.current.pause();
-        terlambatAudioRef.current.currentTime = 0;
+
+            gagalAudioRef.current.pause();
+            gagalAudioRef.current.currentTime = 0;
+
+
+            terlambatAudioRef.current.pause();
+            terlambatAudioRef.current.currentTime = 0;
+
     };
 
 
 
     const playGagalAudio = () => {
-        stopSemuaAudio()
+        stopSemuaAudio();
         gagalAudioRef.current.play();
-        gagalAudioTimeoutRef.current = setTimeout(() => {
-            gagalAudioRef.current.pause();
-            gagalAudioRef.current.currentTime = 0;
-        }, 10000); // Play for 10 seconds
+        // gagalAudioTimeoutRef.current = setTimeout(() => {
+        //     gagalAudioRef.current.pause();
+        //     gagalAudioRef.current.currentTime = 0;
+        // }, 10000); // Play for 10 seconds
     };
+
     const playTerlambatAudio = () => {
-       stopSemuaAudio()
+        stopSemuaAudio();
         terlambatAudioRef.current.play();
-        terlambatAudioRef.current = setTimeout(() => {
-            gagalAudioRef.current.pause();
-            gagalAudioRef.current.currentTime = 0;
-        }, 10000); // Play for 10 seconds
+        // terlambatAudioTimeoutRef.current = setTimeout(() => {
+        //     terlambatAudioRef.current.pause();
+        //     terlambatAudioRef.current.currentTime = 0;
+        // }, 10000); // Play for 10 seconds
     };
 
 
@@ -133,19 +140,30 @@ export const ScannerMasukUjian = () => {
         const foundMurid = storedData.find(murid => murid.id_murid === searchId);
         const currentTime = new Date().toLocaleTimeString('it-IT', { hour12: false });
         const lateStatus = currentTime > newDeadlineTime;
-        console.log(foundMurid)
+        // console.log(foundMurid)
         if (foundMurid) {
             stopSemuaAudio()
 
             if (!foundMurid.sudah_lengkap) {
-                setBackgroundColor('bg-red-500');
+                transitionBackgroundColor('bg-red-500');
+                // setBackgroundColor('bg-red-500');
                 playGagalAudio();
                 setKurangList(foundMurid.yang_kurang.map(item => item.nama_mapel));
             } else {
-                setBackgroundColor(lateStatus ? 'bg-yellow-500' : 'bg-green-300');
+                transitionBackgroundColor(lateStatus ? 'bg-yellow-500' : 'bg-green-300');
+                // setBackgroundColor(lateStatus ? 'bg-yellow-500' : 'bg-green-300');
 
                 if (lateStatus) {
-                    playTerlambatAudio()
+
+                    if (currentTime>batasWaktuTutup){
+                        setIsUjianDiTutup(true)
+                        tidakDitemukanAudioRef.current.play();
+                        playTerlambatAudio()
+
+
+                    }else {
+                        playTerlambatAudio()
+                    }
                 } else {
                     suksesAudioRef.current.play();
                 }
@@ -167,6 +185,7 @@ export const ScannerMasukUjian = () => {
             ]);
 
 
+
         } else {
             stopSemuaAudio()
             toast.error('Murid tidak ditemukan, pastikan id murid valid', {autoClose: 6000})
@@ -174,6 +193,7 @@ export const ScannerMasukUjian = () => {
         }
         setSearchId('');
         searchBarRef.current.focus();
+
 } catch (error) {
            toast.error("Apakah Anda sudah mengambil data dari server?", {autoClose: 3000});
        }
@@ -241,19 +261,7 @@ export const ScannerMasukUjian = () => {
 
 
 
-        //// INI MENYEBABKAN TIDAK BISA HOT RELOAD / SEMACAM CONSOLE LOG TIDAK BISA
-        // const handleBeforeUnload = (event) => {
-        //     const message = 'Are you sure you want to leave? Your data will be lost.';
-        //     event.returnValue = message; // Standard for most browsers
-        //     return message; // For some older browsers
-        // };
-        //
-        // window.addEventListener('beforeunload', handleBeforeUnload);
-        //
-        // return () => {
-        //     // Cleanup the event listener when the component is unmounted
-        //     window.removeEventListener('beforeunload', handleBeforeUnload);
-        // };
+
 
 
 
@@ -261,7 +269,19 @@ export const ScannerMasukUjian = () => {
         if (terlambat) {
         setNewDeadlineTime(terlambat);}
         // console.log(terlambat)
+        //// INI MENYEBABKAN TIDAK BISA HOT RELOAD / SEMACAM CONSOLE LOG TIDAK BISA
+        const handleBeforeUnload = (event) => {
+            const message = 'Are you sure you want to leave? Your data will be lost.';
+            event.returnValue = message; // Standard for most browsers
+            return message; // For some older browsers
+        };
 
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            // Cleanup the event listener when the component is unmounted
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
 
         // jaga agar tetap HIDUP LAYARNYA !!!1
         // if ('wakeLock' in navigator) {
@@ -319,7 +339,7 @@ export const ScannerMasukUjian = () => {
     };
 
     const handledeadlineTime = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
         setNewDeadlineTime(e.target.value)
 
     }
@@ -387,7 +407,12 @@ export const ScannerMasukUjian = () => {
                                 <h1 className={`text-2xl font-bold mb-2 ${backgroundColor === 'bg-green-300' || backgroundColor === 'bg-yellow-500' ? 'text-black' : 'text-white'}`}>{foundedMurid.nama_murid}</h1>
                                 <h2 className="text-xl mb-4">{foundedMurid.nama_kelas}</h2>
                                 <h3 className={`text-6xl font-extrabold mb-4 ${backgroundColor === 'bg-green-300' || backgroundColor === 'bg-yellow-500' ? 'text-black' : 'text-white'}`}>
+
                                     {backgroundColor === 'bg-green-300' ? 'DITERIMA!' : (backgroundColor === 'bg-yellow-500' ? 'ANDA TERLAMBAT' : 'DITOLAK!')}
+                                    <br/>
+                                    <br/>
+
+                                    {isUjianDitutup && 'UJIAN DITUTUP!'}
                                 </h3>
                             </div>
                             {backgroundColor === 'bg-red-500' && (

@@ -51,7 +51,7 @@ const DataMurid = () => {
 
         fetchAdminData();
 
-        console.log(user)
+        // console.log(user)
 
         fetchData();
     }, []);
@@ -62,7 +62,7 @@ const DataMurid = () => {
             // console.log(idSelectedKelas)
             try {
                 const response = await axios.get(`${baseURL}/kelas/murid/all/${idSelectedKelas}`);
-                console.log(response.data)
+                // console.log(response.data)
                 setMuridData(response.data);
 
             } catch (error) {

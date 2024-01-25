@@ -11,6 +11,7 @@ import QRCode from "qrcode.react";
 import logo from "../../../logo_ppds.png";
 import toPng from 'html-to-image';
 import * as htmlToImage from 'html-to-image';
+import {TempelanNomer} from "./TempelanNomer.jsx";
 export const QRGenerator = () => {
     const [idMuridInput, setIdMuridInput] = useState(''); // For storing the input
 
@@ -133,6 +134,85 @@ export const QRGenerator = () => {
 
     };
 
+    const handleGenerateTempelanNomerPdf = async () => {
+        setIsLoadingQr(true)
+        const dataMurid = JSON.parse(localStorage.getItem('dataTaftisan') || '[]');
+        if (dataMurid) {
+            const cardsPerRow = 5;
+            const rowsPerPage = 8; // 40 cards per F4 page
+            const cardsPerPage = cardsPerRow * rowsPerPage;
+            const mmToPx = 3.7795275591; // Conversion factor from mm to pixels
+            const segmentSize = 200; // Jumlah data per segmen
+
+            for (let segment = 0; segment < Math.ceil(dataMurid.length / segmentSize); segment++) {
+                let canvases = [];
+                for (let page = segment * segmentSize; page < Math.min((segment + 1) * segmentSize, dataMurid.length); page += cardsPerPage) {
+                    const pageContainer = document.createElement('div');
+                    pageContainer.className = 'flex flex-wrap';
+                    pageContainer.style.width = `${210 * mmToPx}px`;
+                    pageContainer.style.height = `${330 * mmToPx}px`;
+                    document.body.appendChild(pageContainer);
+
+                    for (let i = 0; i < cardsPerPage; i++) {
+                        const muridIndex = page + i;
+                        if (muridIndex < dataMurid.length) {
+                            const murid = dataMurid[muridIndex];
+                            const qrCardElement = document.createElement('div');
+                            qrCardElement.className = 'flex';
+                            qrCardElement.style.width = `${41.2 * mmToPx}px`;
+                            qrCardElement.style.height = `${40.5 * mmToPx}px`;
+                            ReactDOM.render(<TempelanNomer nama_murid={murid.nama_murid} idMurid={murid.id_murid}  kelas_murid={murid.nama_kelas} marginLeft={0} />, qrCardElement);
+                            pageContainer.appendChild(qrCardElement);
+                        }
+                    }
+
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                    const pixelRatio = 3;
+                    // const image = await htmlToImage.toPng(qrCardElement, { pixelRatio });
+                    const image = await htmlToImage.toPng(pageContainer, {
+                        width: pageContainer.offsetWidth,
+                        height: pageContainer.offsetHeight,pixelRatio
+                    });
+
+                    canvases.push(image);
+
+                    ReactDOM.unmountComponentAtNode(pageContainer);
+                    pageContainer.parentNode.removeChild(pageContainer);
+                }
+
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: [210, 330]
+                });
+
+                canvases.forEach((image, index) => {
+                    if (index > 0) {
+                        pdf.addPage([210, 330]);
+                    }
+
+                    // Create an image element
+                    const img = new Image();
+                    img.src = image;
+
+                    // Add the image to the PDF
+                    pdf.addImage(img, 'PNG', 0, 0, 210, 330);
+                });
+
+                pdf.save(`tempelan-part${segment + 1}.pdf`);
+            }
+
+
+        } else {
+            toast.error('Murid Tidak Ditemukan, Pastikan id_murid Valid');
+            toast.warning("Apakah anda sudah mengambil data dari server?");
+        }
+        setIsLoadingQr(false)
+
+
+    };
+
 
 
 
@@ -221,7 +301,24 @@ export const QRGenerator = () => {
                     >
                         Buat Banyak Qr Sekaligus (pdf)
                     </button>
+
+
                     </div>
+
+                <div className="flex mt-2 justify-center">
+
+
+                    <button
+                        className=" bg-violet-700 hover:bg-blue-700 text-white font-bold py-2 w-96 rounded mt-4"
+                        onClick={()=>handleGenerateTempelanNomerPdf()}
+                    >
+                        Buat Tempelan Nomer Ujian
+                    </button>
+
+
+                    </div>
+
+
 
                 <p className="text-xs py-2 ml-2">Kartu Ujian akan tampil seperti contoh ini:</p>
 
@@ -258,13 +355,32 @@ export const QRGenerator = () => {
                             </div>
                             <p className="mt-1 italic text-xs">Semester Akhir 1444-1445 H</p>
 
+                        </div>
 
+                    </div>
+                </div>
+
+
+
+                <div className="flex flex-col w-[41.2mm] h-[40.5mm] bg-white border border-black ml-2 mt-4">
+                    <p className="text-center mt-0.5 italic"  style={{ fontSize: '0.4rem' }}>No Ujian Madrasah Diniyah Darussaadah:</p>
+
+                    <div className=" mt-0.5 flex ml-1">
+
+                        <div className="text-center w-[41.2mm]">
+
+                            <div className="py-4  text-center  mr-1 border border-gray-700 rounded">
+                                {/*<p className="text-xs absolute top-50 left-1.5 transform -translate-x-50 -translate-y-50">{"nama_murid"}</p>*/}
+                                <p className="text-7xl font-bold">{"448"}</p>
+                            </div>
+                            <div className="mt-1 px-1.5  text-center  mr-1 border border-gray-700 rounded">
+                                <p className="text-xs">{"4 Ibt Pi Pagi Siang"}</p>
+                            </div>
+                            <p className="mt-0.5 italic"  style={{ fontSize: '0.4rem' }}>Semester Akhir 1444-1445 H</p>
 
                         </div>
 
                     </div>
-
-
                 </div>
 
 
