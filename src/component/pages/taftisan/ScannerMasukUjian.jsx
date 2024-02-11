@@ -353,33 +353,46 @@ export const ScannerMasukUjian = () => {
 
         <div className="bg-[#f4f4f4] min-h-screen">
             <div className="container mx-auto p-4">
-
                 {/*<Prompt when={true} message="are you sure you want to leave this page?" />*/}
 
+                <div className="flex items-center mb-2">
+                    <input
+                        ref={searchBarRef}
+                        type="number"
+                        value={searchId}
+                        onChange={(e) => setSearchId(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className=" border border-gray-400 rounded py-3 px-5 text-lg focus:border-teal-600 focus:ring-teal-600"
+                        placeholder="Cari Id_murid"
+                    />
+                    <button onClick={() => setSearchId('')} className="ml-2 bg-red-500 hover:bg-red-600 text-white text-lg font-bold py-3 px-3 rounded focus:outline-none">
+                        Hapus
+                    </button>
 
-                <input
-                    ref={searchBarRef}
-                    type="number"
-                    value={searchId}
-                    onChange={(e) => setSearchId(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    className="mb-2 border border-gray-400 rounded py-3 px-5 w-full text-lg focus:border-teal-600 focus:ring-teal-600"
-                    placeholder="Cari Id_murid"
-                />
+
+                </div>
 
                 <div className="flex gap-2 items-center">
 
-                    <button onClick={handleSearch} className="bg-yellow-500 hover:bg-yellow-600 text-black text-lg font-bold py-3 px-3 rounded focus:outline-none">
+                    <button  onClick={handleSearch} className="bg-yellow-500 hover:bg-yellow-600 text-black text-lg font-bold py-3 px-3 rounded focus:outline-none">
                         Cari
                     </button>
-                    <button onClick={handlePrevSearch} className="bg-gray-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-3 rounded focus:outline-none">
+
+                    <button onClick={handlePrevSearch} className=" bg-gray-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-3 rounded focus:outline-none">
                         <BackwardIcon className="w-5 h-7" aria-hidden="true" />
                     </button>
+
 
                     <button onClick={()=> {
                         searchBarRef.current.focus()
                         stopSemuaAudio()
-                    }} className="bg-gray-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-4 rounded focus:outline-none">
+                    }}
+
+
+                            className="bg-blue-400 hover:bg-gray-700 text-white text-lg font-bold py-3 px-4 rounded focus:outline-none"
+
+
+                    >
                         Fokus
                     </button>
 

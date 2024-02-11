@@ -10,7 +10,7 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
     console.log(jsonData)
     // Mengelompokkan data kehadiran berdasarkan 'id_murid'
     const kehadiranById = dataKehadiran.reduce((acc, item) => {
-        acc[item.id_murid] = item.kehadiran.alpha/4; // asumsikan 'alpha' adalah nilai pelanggaran
+        acc[item.id_murid] = item.kehadiran.alpha/15; // asumsikan 'alpha' adalah nilai pelanggaran
         return acc;
     }, {});
 
@@ -80,12 +80,12 @@ const TabelRapot = ({ jsonData, dataKehadiran }) => {
                 return (
                     <td key={`${murid.id_murid}-${fan}`}
                         className={`border px-4 py-2 ${isHighlighted ? 'font-bold text-red-600' : ''}`}>
-                        {(nilai).toFixed(1)}
+                        {isNaN(nilai) ? "" : (nilai).toFixed(1)}
                     </td>
                 );
             })}
             <td className="border px-4 py-2">{(murid.total).toFixed(1)}</td>
-            <td className="border px-4 py-2">{(murid.pelanggaran)}</td>
+            <td className="border px-4 py-2"> {isNaN(murid.pelanggaran) ? "" : (murid.pelanggaran).toFixed(2)}</td>
             <td className="border px-4 py-2">{(murid.grandTotal).toFixed(1)}</td>
             <td className={`border px-4 py-2 ${parseFloat((murid.average)) <= 5.5 ? 'bg-red-600 text-white' : ''}`}>
                 {formatNumber(parseFloat(murid.average))}
